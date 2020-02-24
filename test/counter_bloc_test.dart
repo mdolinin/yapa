@@ -15,19 +15,21 @@ void main() {
     });
 
     test('initial state is 0', () {
-      expect(counterBloc.initialState, InitialCounterState(0));
+      expect(counterBloc.initialState, CounterInitial(0));
     });
 
-    blocTest('emits [0, 1] when IncrementCounterEvent is added',
+    blocTest(
+      'emits [0, 1] when IncrementCounterEvent is added',
       build: () => counterBloc,
-      act: (bloc) => bloc.add(IncrementCounterEvent()),
-      expect: [InitialCounterState(0), InitialCounterState(1)],
+      act: (bloc) => bloc.add(CounterIncremented()),
+      expect: [CounterInitial(0), CounterInitial(1)],
     );
 
-    blocTest('emits [0, -1] when DecrementCounterEvent is added',
+    blocTest(
+      'emits [0, -1] when DecrementCounterEvent is added',
       build: () => counterBloc,
-      act: (bloc) => bloc.add(DecrementCounterEvent()),
-      expect: [InitialCounterState(0), InitialCounterState(-1)],
+      act: (bloc) => bloc.add(CounterDecremented()),
+      expect: [CounterInitial(0), CounterInitial(-1)],
     );
   });
 }

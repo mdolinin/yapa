@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
               onPressed: () {
-                context.bloc<CounterBloc>().add(IncrementCounterEvent());
+                context.bloc<CounterBloc>().add(CounterIncremented());
               },
               tooltip: 'Increment',
               child: Icon(Icons.add),
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
               onPressed: () {
-                context.bloc<CounterBloc>().add(DecrementCounterEvent());
+                context.bloc<CounterBloc>().add(CounterDecremented());
               },
               tooltip: 'Decrement',
               child: Icon(Icons.remove),

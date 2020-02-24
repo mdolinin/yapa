@@ -9,6 +9,6 @@ abstract class CounterState extends Equatable {
   List<Object> get props => [counter];
 }
 
-class InitialCounterState extends CounterState {
-  InitialCounterState(int counter) : super(counter);
+class CounterInitial extends CounterState {
+  CounterInitial(int counter) : super(counter);
 }
