@@ -11,4 +11,7 @@ abstract class CounterState extends Equatable {
 
 class CounterInitial extends CounterState {
   CounterInitial(int counter) : super(counter);
+
+  @override
+  String toString() => 'CounterInitial { counter: $counter}';
 }
