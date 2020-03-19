@@ -1,0 +1,19 @@
+on: push
+name: Build and Test
+
+env:
+  flutter_channel: 'stable'
+  flutter_version: '1.12.13+hotfix.8'
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter-version: ${{ env.flutter_version }}
+      - run: flutter pub get
+      - run: flutter test
