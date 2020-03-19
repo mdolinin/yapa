@@ -2,8 +2,8 @@ on: push
 name: Build and Test
 
 env:
-  flutter_channel: 'stable'
-  flutter_version: '1.12.13+hotfix.8'
+  flutter_channel: 'master'
+  flutter_version: '1.16.2-pre.7'
 
 jobs:
   build:
