@@ -11,17 +11,17 @@ class Item extends Equatable {
   Item(
     this.name, {
     this.selected = false,
-    String note = '',
+    String volume = '',
     String id,
-  })  : this.volume = note ?? '',
+  })  : this.volume = volume ?? '',
         this.id = id ?? Uuid().v4();
 
-  Item copyWith({bool complete, String id, String note, String task}) {
+  Item copyWith({bool complete, String id, String volume, String name}) {
     return Item(
-      task ?? this.name,
+      name ?? this.name,
       selected: complete ?? this.selected,
       id: id ?? this.id,
-      note: note ?? this.volume,
+      volume: volume ?? this.volume,
     );
   }
 
@@ -41,7 +41,7 @@ class Item extends Equatable {
     return Item(
       entity.name,
       selected: entity.selected ?? false,
-      note: entity.volume,
+      volume: entity.volume,
       id: entity.id ?? Uuid().v4(),
     );
   }
