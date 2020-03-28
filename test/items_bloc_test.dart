@@ -1,7 +1,8 @@
-import 'package:test/test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 import 'package:yapa/bloc/items/items.dart';
+import 'package:yapa/models/item.dart';
 import 'package:yapa/repository/items_repository.dart';
 
 class MockItemsRepository extends Mock implements ItemsRepository {}
@@ -27,6 +28,18 @@ void main() {
       expect: <ItemsState>[
         ItemsLoading(),
         ItemsNotLoaded(),
+      ],
+    );
+
+    blocTest<ItemsBloc, ItemsEvent, ItemsState>(
+      'should add a item to the catalog list in response to an AddItem Event',
+      build: () => itemsBloc,
+      act: (ItemsBloc bloc) async =>
+          bloc..add(LoadItems())..add(AddItem(Item('Crackers', id: '0'))),
+      expect: <ItemsState>[
+        ItemsLoading(),
+        ItemsLoaded([]),
+        ItemsLoaded([Item('Crackers', id: '0')]),
       ],
     );
   });
