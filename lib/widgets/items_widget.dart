@@ -19,6 +19,14 @@ class ItemsWidget extends StatelessWidget {
               final item = items[index];
               return Dismissible(
                 key: Key('Item__${item.id}'),
+                direction: DismissDirection.startToEnd,
+                dismissThresholds: {DismissDirection.startToEnd: 0.1},
+                background: Container(
+                  color: Theme.of(context).errorColor,
+                  padding: EdgeInsets.all(12.0),
+                  alignment: Alignment.centerLeft,
+                  child: Icon(Icons.delete_forever),
+                ),
                 onDismissed: (direction) {
                   BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
                   Scaffold.of(context).showSnackBar(
