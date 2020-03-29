@@ -35,3 +35,15 @@ class UpdateItem extends ItemsEvent {
   @override
   String toString() => 'ItemUpdated { item: $updatedItem }';
 }
+
+class DeleteItem extends ItemsEvent {
+  final Item item;
+
+  const DeleteItem(this.item);
+
+  @override
+  List<Object> get props => [item];
+
+  @override
+  String toString() => 'DeleteItem { item: $item }';
+}
