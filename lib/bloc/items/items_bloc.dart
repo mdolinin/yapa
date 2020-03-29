@@ -23,6 +23,8 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       yield* _mapAddItemToState(event);
     } else if (event is UpdateItem) {
       yield* _mapUpdateItemToState(event);
+    } else if (event is DeleteItem) {
+      yield* _mapDeleteItemToState(event);
     }
   }
 
@@ -51,6 +53,17 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       final List<Item> updatedItems = (state as ItemsLoaded).items.map((item) {
         return item.id == event.updatedItem.id ? event.updatedItem : item;
       }).toList();
+      yield ItemsLoaded(updatedItems);
+      _saveItems(updatedItems);
+    }
+  }
+
+  Stream<ItemsState> _mapDeleteItemToState(DeleteItem event) async* {
+    if (state is ItemsLoaded) {
+      final List<Item> updatedItems = (state as ItemsLoaded)
+          .items
+          .where((item) => item.id != event.item.id)
+          .toList();
       yield ItemsLoaded(updatedItems);
       _saveItems(updatedItems);
     }

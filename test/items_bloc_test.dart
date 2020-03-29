@@ -60,5 +60,23 @@ void main() {
         ItemsLoaded([Item('Pretzels', id: '0')]),
       ],
     );
+
+    blocTest<ItemsBloc, ItemsEvent, ItemsState>(
+      'should remove item from the list in response to a DeleteItem Event',
+      build: () {
+        when(itemsRepository.loadItems()).thenAnswer((_) => Future.value([]));
+        return itemsBloc;
+      },
+      act: (ItemsBloc bloc) async {
+        final item = Item('Crackers', id: '0');
+        bloc..add(LoadItems())..add(AddItem(item))..add(DeleteItem(item));
+      },
+      expect: <ItemsState>[
+        ItemsLoading(),
+        ItemsLoaded([]),
+        ItemsLoaded([Item('Crackers', id: '0')]),
+        ItemsLoaded([]),
+      ],
+    );
   });
 }
