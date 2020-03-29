@@ -17,14 +17,20 @@ class ItemsWidget extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (BuildContext context, index) {
               final item = items[index];
-              return Card(
-                child: ListTile(
-                  leading: FlutterLogo(size: 44.0),
-                  title: Text(item.name),
-                  subtitle: Text(item.volume),
-                  trailing: item.selected
-                      ? Icon(Icons.check_box_outline_blank)
-                      : Icon(Icons.check_box),
+              return Dismissible(
+                key: Key('Item__${item.id}'),
+                onDismissed: (direction) {
+                  BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
+                },
+                child: Card(
+                  child: ListTile(
+                    leading: FlutterLogo(size: 44.0),
+                    title: Text(item.name),
+                    subtitle: Text(item.volume),
+                    trailing: item.selected
+                        ? Icon(Icons.check_box_outline_blank)
+                        : Icon(Icons.check_box),
+                  ),
                 ),
               );
             },
