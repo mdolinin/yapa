@@ -21,6 +21,23 @@ class ItemsWidget extends StatelessWidget {
                 key: Key('Item__${item.id}'),
                 onDismissed: (direction) {
                   BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "${item.name} deleted",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      duration: Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () {
+                          BlocProvider.of<ItemsBloc>(context)
+                              .add(AddItem(item));
+                        },
+                      ),
+                    ),
+                  );
                 },
                 child: Card(
                   child: ListTile(
