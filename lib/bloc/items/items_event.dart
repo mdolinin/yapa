@@ -23,3 +23,15 @@ class AddItem extends ItemsEvent {
   @override
   String toString() => 'AddItem { item: $item }';
 }
+
+class UpdateItem extends ItemsEvent {
+  final Item updatedItem;
+
+  const UpdateItem(this.updatedItem);
+
+  @override
+  List<Object> get props => [updatedItem];
+
+  @override
+  String toString() => 'ItemUpdated { item: $updatedItem }';
+}
