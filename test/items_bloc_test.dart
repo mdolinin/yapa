@@ -42,5 +42,23 @@ void main() {
         ItemsLoaded([Item('Crackers', id: '0')]),
       ],
     );
+
+    blocTest<ItemsBloc, ItemsEvent, ItemsState>(
+      'should update a item in response to an UpdateItem Event',
+      build: () => itemsBloc,
+      act: (ItemsBloc bloc) async {
+        final item = Item('Crackers', id: '0');
+        bloc
+          ..add(LoadItems())
+          ..add(AddItem(item))
+          ..add(UpdateItem(item.copyWith(name: 'Pretzels')));
+      },
+      expect: <ItemsState>[
+        ItemsLoading(),
+        ItemsLoaded([]),
+        ItemsLoaded([Item('Crackers', id: '0')]),
+        ItemsLoaded([Item('Pretzels', id: '0')]),
+      ],
+    );
   });
 }
