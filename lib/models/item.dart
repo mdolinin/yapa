@@ -16,10 +16,10 @@ class Item extends Equatable {
   })  : this.volume = volume ?? '',
         this.id = id ?? Uuid().v4();
 
-  Item copyWith({bool complete, String id, String volume, String name}) {
+  Item copyWith({bool selected, String id, String volume, String name}) {
     return Item(
       name ?? this.name,
-      selected: complete ?? this.selected,
+      selected: selected ?? this.selected,
       id: id ?? this.id,
       volume: volume ?? this.volume,
     );

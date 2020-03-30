@@ -54,8 +54,8 @@ class ItemsWidget extends StatelessWidget {
                     title: Text(item.name),
                     subtitle: Text(item.volume),
                     trailing: item.selected
-                        ? Icon(Icons.check_box_outline_blank)
-                        : Icon(Icons.check_box),
+                        ? Icon(Icons.check_box)
+                        : Icon(Icons.check_box_outline_blank),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(

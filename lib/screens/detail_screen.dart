@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/screens/add_edit_screen.dart';
 
 class DetailsScreen extends StatelessWidget {
   final String id;
@@ -28,13 +29,29 @@ class DetailsScreen extends StatelessWidget {
                 child: Text('${item.volume}'),
               ),
               item.selected
-                  ? Icon(Icons.check_box_outline_blank)
-                  : Icon(Icons.check_box),
+                  ? Icon(Icons.check_box)
+                  : Icon(Icons.check_box_outline_blank),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: item == null
+              ? null
+              : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (BuildContext context) {
+                      return AddEditScreen(
+                        onSave: (Item updatedItem) {
+                          BlocProvider.of<ItemsBloc>(context).add(
+                            UpdateItem(updatedItem.copyWith(id: item.id)),
+                          );
+                        },
+                        isEditing: true,
+                        item: item,
+                      );
+                    }),
+                  );
+                },
           child: Icon(Icons.edit),
         ),
       );
