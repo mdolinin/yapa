@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
+import 'package:yapa/screens/detail_screen.dart';
 
 class ItemsWidget extends StatelessWidget {
   @override
@@ -55,6 +56,13 @@ class ItemsWidget extends StatelessWidget {
                     trailing: item.selected
                         ? Icon(Icons.check_box_outline_blank)
                         : Icon(Icons.check_box),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => DetailsScreen(id: item.id),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
