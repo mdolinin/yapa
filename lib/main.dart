@@ -33,6 +33,7 @@ class YapaApp extends StatelessWidget {
               onSave: (Item item) {
                 BlocProvider.of<ItemsBloc>(context).add(AddItem(item));
               },
+              isEditing: false,
             ),
       },
     );
