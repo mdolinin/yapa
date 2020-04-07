@@ -25,7 +25,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    _item = _item != null ? _item : isEditing ? widget.item : null;
+    _item = _item ?? (isEditing ? widget.item : Item(''));
     return Scaffold(
       appBar: AppBar(
         title: isEditing ? Text('Edit item') : Text('Add item'),
@@ -37,7 +37,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
-                initialValue: isEditing ? _item.name : '',
+                initialValue: _item.name,
                 autofocus: !isEditing,
                 decoration: InputDecoration(hintText: 'Enter item name'),
                 style: textTheme.headline5,
@@ -47,21 +47,15 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       : null;
                 },
                 onSaved: (value) {
-                  if (_item == null) {
-                    _item = Item(value);
-                  } else {
-                    _item = _item.copyWith(name: value);
-                  }
+                  _item = _item.copyWith(name: value);
                 },
               ),
               TextFormField(
-                initialValue: isEditing ? _item.volume : '',
+                initialValue: _item.volume,
                 decoration: InputDecoration(hintText: 'Enter item volume'),
                 style: textTheme.headline5,
                 onSaved: (value) {
-                  if (_item != null) {
-                    _item = _item.copyWith(volume: value);
-                  }
+                  _item = _item.copyWith(volume: value);
                 },
               ),
               SwitchListTile(
@@ -69,12 +63,10 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   'Select',
                   style: textTheme.headline5,
                 ),
-                value: isEditing ? _item.selected : false,
+                value: _item.selected,
                 onChanged: (bool value) {
                   setState(() {
-                    if (_item != null) {
-                      _item = _item.copyWith(selected: value);
-                    }
+                    _item = _item.copyWith(selected: value);
                   });
                 },
               )
