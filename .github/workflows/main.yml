@@ -3,7 +3,7 @@ name: Build and Test
 
 env:
   flutter_channel: 'dev'
-  flutter_version: '1.16.1'
+  flutter_version: '1.16.3'
 
 jobs:
   build:
