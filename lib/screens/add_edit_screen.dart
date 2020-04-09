@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/models/item.dart';
 
 typedef OnSaveCallback = Function(Item item);
@@ -21,6 +25,16 @@ class _AddEditScreenState extends State<AddEditScreen> {
   Item _item;
 
   bool get isEditing => widget.isEditing;
+
+  String _path = null;
+
+  void _showPhotoLibrary() async {
+    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    print(file.path);
+    setState(() {
+      _path = file.path;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +83,17 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     _item = _item.copyWith(selected: value);
                   });
                 },
-              )
+              ),
+              ListTile(
+                onTap: () {
+                    _showPhotoLibrary();
+                },
+                leading: Icon(Icons.photo_library),
+                title: Text("Choose from photo library"),
+              ),
+              _path == null
+                  ? Image.memory(kTransparentImage)
+                  : Image.file(File(_path)),
             ],
           ),
         ),
