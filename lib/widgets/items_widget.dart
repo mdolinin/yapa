@@ -50,7 +50,15 @@ class ItemsWidget extends StatelessWidget {
                 },
                 child: Card(
                   child: ListTile(
-                    leading: FlutterLogo(size: 44.0),
+                    leading: CircleAvatar(
+                      radius: 44.0,
+                      backgroundColor: Colors.transparent,
+                      child: ((int.tryParse(item.id) ?? 6) > 5)
+                          ? FlutterLogo(size: 44.0)
+                          : Image(
+                              image: AssetImage('images/${item.id}.jpeg'),
+                            ),
+                    ),
                     title: Text(item.name),
                     subtitle: Text(item.volume),
                     trailing: item.selected
