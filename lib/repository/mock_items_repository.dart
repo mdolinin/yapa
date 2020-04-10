@@ -6,7 +6,7 @@ import 'package:yapa/repository/items_repository.dart';
 class MockItemsRepository implements ItemsRepository {
   final Duration delay;
 
-  const MockItemsRepository([this.delay = const Duration(milliseconds: 3000)]);
+  const MockItemsRepository([this.delay = const Duration(milliseconds: 1500)]);
 
   @override
   Future<List<ItemEntity>> loadItems() async {
@@ -18,30 +18,35 @@ class MockItemsRepository implements ItemsRepository {
                 '1',
                 '20 oz',
                 false,
+                'images/1.jpeg',
               ),
               ItemEntity(
                 'Cookies Choc. Chips',
                 '2',
                 '13 oz',
                 false,
+                'images/2.jpeg',
               ),
               ItemEntity(
                 'Crackers',
                 '3',
                 '13 oz',
                 true,
+                'images/3.jpeg',
               ),
               ItemEntity(
                 'Pretzels',
                 '4',
                 '16 oz',
                 false,
+                'images/4.jpeg',
               ),
               ItemEntity(
                 'Italian Loaf',
                 '5',
                 '14 oz',
                 true,
+                'images/5.jpeg',
               ),
             ]);
   }

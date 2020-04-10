@@ -3,12 +3,17 @@ class ItemEntity {
   final String name;
   final String volume;
   final bool selected;
+  final String pathToImage;
 
-  ItemEntity(this.name, this.id, this.volume, this.selected);
+  ItemEntity(this.name, this.id, this.volume, this.selected, this.pathToImage);
 
   @override
   int get hashCode =>
-      selected.hashCode ^ name.hashCode ^ volume.hashCode ^ id.hashCode;
+      selected.hashCode ^
+      name.hashCode ^
+      volume.hashCode ^
+      id.hashCode ^
+      pathToImage.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -18,6 +23,7 @@ class ItemEntity {
           selected == other.selected &&
           name == other.name &&
           volume == other.volume &&
+          pathToImage == other.pathToImage &&
           id == other.id;
 
   Map<String, Object> toJson() {
@@ -26,12 +32,13 @@ class ItemEntity {
       'name': name,
       'volume': volume,
       'id': id,
+      'pathToImage': pathToImage,
     };
   }
 
   @override
   String toString() {
-    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id}';
+    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage}';
   }
 
   static ItemEntity fromJson(Map<String, Object> json) {
@@ -40,6 +47,7 @@ class ItemEntity {
       json['id'] as String,
       json['volume'] as String,
       json['selected'] as bool,
+      json['pathToImage'] as String,
     );
   }
 }

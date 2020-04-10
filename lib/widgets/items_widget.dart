@@ -53,10 +53,10 @@ class ItemsWidget extends StatelessWidget {
                     leading: CircleAvatar(
                       radius: 44.0,
                       backgroundColor: Colors.transparent,
-                      child: ((int.tryParse(item.id) ?? 6) > 5)
+                      child: item.pathToImage == ''
                           ? FlutterLogo(size: 44.0)
                           : Image(
-                              image: AssetImage('images/${item.id}.jpeg'),
+                              image: AssetImage('${item.pathToImage}'),
                             ),
                     ),
                     title: Text(item.name),
