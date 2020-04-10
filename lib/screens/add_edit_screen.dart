@@ -86,7 +86,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
               ),
               ListTile(
                 onTap: () {
-                    _showPhotoLibrary();
+                  _showPhotoLibrary();
                 },
                 leading: Icon(Icons.photo_library),
                 title: Text("Choose from photo library"),
