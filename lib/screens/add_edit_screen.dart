@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/models/item.dart';
 
@@ -26,13 +28,15 @@ class _AddEditScreenState extends State<AddEditScreen> {
 
   bool get isEditing => widget.isEditing;
 
-  String _path = null;
-
   void _showPhotoLibrary() async {
-    final file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    print(file.path);
+    final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    final fileName = basename(image.path);
+    final File localImage = await image.copy('$appDocPath/$fileName');
     setState(() {
-      _path = file.path;
+      _item = _item.copyWith(pathToImage: localImage.path);
     });
   }
 
@@ -91,9 +95,11 @@ class _AddEditScreenState extends State<AddEditScreen> {
                 leading: Icon(Icons.photo_library),
                 title: Text("Choose from photo library"),
               ),
-              _path == null
+              _item.pathToImage == ''
                   ? Image.memory(kTransparentImage)
-                  : Image.file(File(_path)),
+                  : Image(
+                      image: AssetImage('${_item.pathToImage}'),
+                    ),
             ],
           ),
         ),

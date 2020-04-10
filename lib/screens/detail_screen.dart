@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
@@ -31,6 +32,11 @@ class DetailsScreen extends StatelessWidget {
               item.selected
                   ? Icon(Icons.check_box)
                   : Icon(Icons.check_box_outline_blank),
+              item.pathToImage == ''
+                  ? Image.memory(kTransparentImage)
+                  : Image(
+                      image: AssetImage('${item.pathToImage}'),
+                    ),
             ],
           ),
         ),
