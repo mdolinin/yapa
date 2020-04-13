@@ -1,8 +1,18 @@
+import 'package:hive/hive.dart';
+
+part 'item_entity.g.dart';
+
+@HiveType(typeId: 0)
 class ItemEntity {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String volume;
+  @HiveField(3)
   final bool selected;
+  @HiveField(4)
   final String pathToImage;
 
   ItemEntity(this.name, this.id, this.volume, this.selected, this.pathToImage);
