@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/screens/detail_screen.dart';
+import 'package:yapa/utils/file_utils.dart';
 
 class ItemsWidget extends StatelessWidget {
   @override
@@ -56,7 +57,8 @@ class ItemsWidget extends StatelessWidget {
                       child: item.pathToImage == ''
                           ? FlutterLogo(size: 44.0)
                           : Image(
-                              image: AssetImage('${item.pathToImage}'),
+                              image: AssetImage(
+                                  '${FileUtils.absolutePath(item.pathToImage)}'),
                             ),
                     ),
                     title: Text(item.name),
