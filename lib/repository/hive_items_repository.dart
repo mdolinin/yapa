@@ -16,6 +16,7 @@ class HiveItemsRepository implements ItemsRepository {
 
   @override
   Future<bool> saveItems(List<ItemEntity> items) async {
-    return itemsBox.addAll(items).then((value) => true);
+    items.forEach((item) => itemsBox.put(item.id, item));
+    return Future.value(true);
   }
 }
