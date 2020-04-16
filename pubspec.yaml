@@ -4,7 +4,7 @@ description: Yet another pantry app.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.5.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -17,12 +17,20 @@ dependencies:
   image_picker: ^0.6.4
   transparent_image: ^1.0.0
   path_provider: ^1.6.5
+  hive: ^1.4.1+1
+  hive_flutter: ^0.3.0+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   test: ^1.12.0
   bloc_test: ^3.1.0
+  quiver: ^2.0.5
+  hive_generator: ^0.7.0+2
+  build_runner: ^1.8.1
+
+dependency_overrides:
+  quiver: ^2.0.5
 
 flutter:
   uses-material-design: true

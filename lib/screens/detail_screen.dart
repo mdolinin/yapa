@@ -4,6 +4,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
+import 'package:yapa/utils/file_utils.dart';
 
 class DetailsScreen extends StatelessWidget {
   final String id;
@@ -35,7 +36,8 @@ class DetailsScreen extends StatelessWidget {
               item.pathToImage == ''
                   ? Image.memory(kTransparentImage)
                   : Image(
-                      image: AssetImage('${item.pathToImage}'),
+                      image: AssetImage(
+                          '${FileUtils.absolutePath(item.pathToImage)}'),
                     ),
             ],
           ),

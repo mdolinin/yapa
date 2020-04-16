@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/utils/file_utils.dart';
 
 typedef OnSaveCallback = Function(Item item);
 
@@ -31,12 +31,11 @@ class _AddEditScreenState extends State<AddEditScreen> {
   void _showPhotoLibrary() async {
     final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDocDir.path;
+    String appDocPath = FileUtils.appDocDir.path;
     final fileName = basename(image.path);
-    final File localImage = await image.copy('$appDocPath/$fileName');
+    await image.copy('$appDocPath/$fileName');
     setState(() {
-      _item = _item.copyWith(pathToImage: localImage.path);
+      _item = _item.copyWith(pathToImage: fileName);
     });
   }
 
@@ -98,7 +97,8 @@ class _AddEditScreenState extends State<AddEditScreen> {
               _item.pathToImage == ''
                   ? Image.memory(kTransparentImage)
                   : Image(
-                      image: AssetImage('${_item.pathToImage}'),
+                      image: AssetImage(
+                          '${FileUtils.absolutePath(_item.pathToImage)}'),
                     ),
             ],
           ),
