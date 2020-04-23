@@ -14,8 +14,11 @@ class ItemEntity {
   final bool selected;
   @HiveField(4)
   final String pathToImage;
+  @HiveField(5)
+  final List<String> tags;
 
-  ItemEntity(this.name, this.id, this.volume, this.selected, this.pathToImage);
+  ItemEntity(this.name, this.id, this.volume, this.selected, this.pathToImage,
+      this.tags);
 
   @override
   int get hashCode =>
@@ -23,7 +26,8 @@ class ItemEntity {
       name.hashCode ^
       volume.hashCode ^
       id.hashCode ^
-      pathToImage.hashCode;
+      pathToImage.hashCode ^
+      tags.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -34,6 +38,7 @@ class ItemEntity {
           name == other.name &&
           volume == other.volume &&
           pathToImage == other.pathToImage &&
+          tags == other.tags &&
           id == other.id;
 
   Map<String, Object> toJson() {
@@ -43,12 +48,13 @@ class ItemEntity {
       'volume': volume,
       'id': id,
       'pathToImage': pathToImage,
+      'tags': tags,
     };
   }
 
   @override
   String toString() {
-    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage}';
+    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage, tags: $tags}';
   }
 
   static ItemEntity fromJson(Map<String, Object> json) {
@@ -58,6 +64,7 @@ class ItemEntity {
       json['volume'] as String,
       json['selected'] as bool,
       json['pathToImage'] as String,
+      json['tags'] as List<String>,
     );
   }
 }

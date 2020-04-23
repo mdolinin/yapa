@@ -30,6 +30,24 @@ class DetailsScreen extends StatelessWidget {
               Container(
                 child: Text('${item.volume}'),
               ),
+              Center(
+                child: Wrap(
+                  runSpacing: 5.0,
+                  spacing: 5.0,
+                  alignment: WrapAlignment.spaceAround,
+                  children: item.tags
+                      .map(
+                        (name) => FilterChip(
+                          label: Text('$name'),
+                          checkmarkColor: Theme.of(context).canvasColor,
+                          selectedColor: Theme.of(context).accentColor,
+                          selected: true,
+                          onSelected: (bool value) {},
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
               item.selected
                   ? Icon(Icons.check_box)
                   : Icon(Icons.check_box_outline_blank),

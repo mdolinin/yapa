@@ -9,6 +9,8 @@ import 'package:yapa/utils/file_utils.dart';
 
 typedef OnSaveCallback = Function(Item item);
 
+const List<String> store_names = ['Aldi', 'Bravo', 'Dollar Tree', 'Wallmart'];
+
 class AddEditScreen extends StatefulWidget {
   final OnSaveCallback onSave;
   final bool isEditing;
@@ -74,6 +76,30 @@ class _AddEditScreenState extends State<AddEditScreen> {
                 onSaved: (value) {
                   _item = _item.copyWith(volume: value);
                 },
+              ),
+              Wrap(
+                alignment: WrapAlignment.spaceAround,
+                children: store_names
+                    .map(
+                      (name) => FilterChip(
+                        label: Text('$name'),
+                        checkmarkColor: Theme.of(context).canvasColor,
+                        selectedColor: Theme.of(context).accentColor,
+                        selected: _item.tags.contains('$name'),
+                        onSelected: (bool value) {
+                          List<String> tags = List.from(_item.tags);
+                          if (value) {
+                            tags..add('$name');
+                          } else {
+                            tags..remove('$name');
+                          }
+                          setState(() {
+                            _item = _item.copyWith(tags: tags);
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
               SwitchListTile(
                 title: Text(
