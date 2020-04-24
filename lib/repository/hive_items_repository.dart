@@ -16,7 +16,11 @@ class HiveItemsRepository implements ItemsRepository {
 
   @override
   Future<bool> saveItems(List<ItemEntity> items) async {
-    items.forEach((item) => itemsBox.put(item.id, item));
+    Map<String, ItemEntity> itemsMap =
+        Map.fromIterable(items, key: (e) => e.id, value: (e) => e);
+    itemsBox
+        .deleteAll(itemsBox.keys.where((key) => !itemsMap.keys.contains(key)));
+    itemsBox.putAll(itemsMap);
     return Future.value(true);
   }
 }
