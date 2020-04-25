@@ -4,6 +4,8 @@ import 'package:hive/hive.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/repository/items_repository.dart';
 
+const k_items_box_name = 'items';
+
 class HiveItemsRepository implements ItemsRepository {
   final Box<ItemEntity> itemsBox;
 

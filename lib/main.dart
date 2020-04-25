@@ -19,7 +19,7 @@ void main() async {
   BlocSupervisor.delegate = LoggingBlocDelegate();
   await Hive.initFlutter();
   Hive.registerAdapter<ItemEntity>(ItemEntityAdapter());
-  final itemsBox = await Hive.openBox<ItemEntity>('items');
+  final itemsBox = await Hive.openBox<ItemEntity>(k_items_box_name);
   FileUtils.appDocDir = await getApplicationDocumentsDirectory();
   runApp(BlocProvider(
     create: (context) =>
