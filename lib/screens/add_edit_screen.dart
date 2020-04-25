@@ -5,11 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/utils/file_utils.dart';
 
 typedef OnSaveCallback = Function(Item item);
-
-const List<String> store_names = ['Aldi', 'Bravo', 'Dollar Tree', 'Wallmart'];
 
 class AddEditScreen extends StatefulWidget {
   final OnSaveCallback onSave;
