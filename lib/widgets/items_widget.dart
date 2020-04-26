@@ -25,88 +25,68 @@ class ItemsWidget extends StatelessWidget {
           );
         } else if (state is ItemsLoaded) {
           final items = state.items.where(filter).toList();
-          return Column(
-            children: <Widget>[
-              Center(
-                child: Chip(
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  avatar: CircleAvatar(
-                    backgroundColor: Theme.of(context).canvasColor,
-                    child: Icon(
-                      Icons.store_mall_directory,
-                      color: Theme.of(context).accentColor,
+          return ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (BuildContext context, index) {
+              final item = items[index];
+              return Dismissible(
+                key: Key('Item__${item.id}'),
+                direction: DismissDirection.startToEnd,
+                dismissThresholds: {DismissDirection.startToEnd: 0.1},
+                background: Container(
+                  color: Theme.of(context).errorColor,
+                  padding: EdgeInsets.all(12.0),
+                  alignment: Alignment.centerLeft,
+                  child: Icon(Icons.delete_forever),
+                ),
+                onDismissed: (direction) {
+                  BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "${item.name} deleted",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      duration: Duration(seconds: 2),
+                      action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () {
+                          BlocProvider.of<ItemsBloc>(context)
+                              .add(AddItem(item));
+                        },
+                      ),
                     ),
-                  ),
-                  label: Text('$tagNameToFilter'),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (BuildContext context, index) {
-                    final item = items[index];
-                    return Dismissible(
-                      key: Key('Item__${item.id}'),
-                      direction: DismissDirection.startToEnd,
-                      dismissThresholds: {DismissDirection.startToEnd: 0.1},
-                      background: Container(
-                        color: Theme.of(context).errorColor,
-                        padding: EdgeInsets.all(12.0),
-                        alignment: Alignment.centerLeft,
-                        child: Icon(Icons.delete_forever),
-                      ),
-                      onDismissed: (direction) {
-                        BlocProvider.of<ItemsBloc>(context)
-                            .add(DeleteItem(item));
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "${item.name} deleted",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                  );
+                },
+                child: Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 44.0,
+                      backgroundColor: Colors.transparent,
+                      child: item.pathToImage == ''
+                          ? FlutterLogo(size: 44.0)
+                          : Image(
+                              image: AssetImage(
+                                  '${FileUtils.absolutePath(item.pathToImage)}'),
                             ),
-                            duration: Duration(seconds: 2),
-                            action: SnackBarAction(
-                              label: 'Undo',
-                              onPressed: () {
-                                BlocProvider.of<ItemsBloc>(context)
-                                    .add(AddItem(item));
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 44.0,
-                            backgroundColor: Colors.transparent,
-                            child: item.pathToImage == ''
-                                ? FlutterLogo(size: 44.0)
-                                : Image(
-                                    image: AssetImage(
-                                        '${FileUtils.absolutePath(item.pathToImage)}'),
-                                  ),
-                          ),
-                          title: Text(item.name),
-                          subtitle: Text(item.volume),
-                          trailing: item.selected
-                              ? Icon(Icons.check_box)
-                              : Icon(Icons.check_box_outline_blank),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => DetailsScreen(id: item.id),
-                              ),
-                            );
-                          },
+                    ),
+                    title: Text(item.name),
+                    subtitle: Text(item.volume),
+                    trailing: item.selected
+                        ? Icon(Icons.check_box)
+                        : Icon(Icons.check_box_outline_blank),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => DetailsScreen(id: item.id),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           );
         } else {
           return Container();
