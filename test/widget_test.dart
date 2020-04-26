@@ -23,8 +23,8 @@ void main() {
     await tester.pump(new Duration(milliseconds: 3000));
 
     // Tap the checkbox icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.check_box).first);
-    await tester.pump();
+    await tester.tap(find.byType(Checkbox).first);
+    await tester.pumpAndSettle();
 
     // Verify that nothing changed.
     expect(find.text('Shopping list'), findsOneWidget);

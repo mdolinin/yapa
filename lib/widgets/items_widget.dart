@@ -36,8 +36,26 @@ class ItemsWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is ItemsLoaded) {
-          final items = state.items.where(_filterFromTagName()).toList();
-          return ListView.builder(
+          final items = state.items.where(_filterFromTagName()).toList()
+            ..sort(
+                (a, b) => b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
+          return ListView.separated(
+            separatorBuilder: (context, index) {
+              if (!items[index].selected && items[index + 1].selected) {
+                return Card(
+                  color: Theme.of(context).dividerColor,
+                  child: ListTile(
+                    dense: true,
+                    title: Center(
+                      child: Text('Already bought',
+                          style: Theme.of(context).textTheme.headline5),
+                    ),
+                  ),
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            },
             itemCount: items.length,
             itemBuilder: (BuildContext context, index) {
               final item = items[index];
@@ -72,6 +90,9 @@ class ItemsWidget extends StatelessWidget {
                   );
                 },
                 child: Card(
+                  color: item.selected
+                      ? Theme.of(context).buttonColor
+                      : Theme.of(context).cardColor,
                   child: ListTile(
                     leading: CircleAvatar(
                       radius: 44.0,
@@ -85,9 +106,14 @@ class ItemsWidget extends StatelessWidget {
                     ),
                     title: Text(item.name),
                     subtitle: Text(item.volume),
-                    trailing: item.selected
-                        ? Icon(Icons.check_box)
-                        : Icon(Icons.check_box_outline_blank),
+                    trailing: Checkbox(
+                      value: item.selected,
+                      onChanged: (bool value) {
+                        BlocProvider.of<ItemsBloc>(context).add(
+                          UpdateItem(item.copyWith(selected: value)),
+                        );
+                      },
+                    ),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
