@@ -22,13 +22,15 @@ class DetailsScreen extends StatelessWidget {
           title: Text('Item Details'),
         ),
         body: Center(
-          child: Column(
+          child: ListView(
             children: <Widget>[
-              Container(
-                child: Text('${item.name}'),
+              Center(
+                child: Text('${item.name}',
+                    style: Theme.of(context).textTheme.headline5),
               ),
-              Container(
-                child: Text('${item.volume}'),
+              Center(
+                child: Text('${item.volume}',
+                    style: Theme.of(context).textTheme.headline6),
               ),
               Center(
                 child: Wrap(
