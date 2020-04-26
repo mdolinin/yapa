@@ -4,12 +4,12 @@ import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
 import 'package:yapa/widgets/items_widget.dart';
 
-class CatalogScreen extends StatefulWidget {
+class ShoppingListScreen extends StatefulWidget {
   @override
-  _CatalogScreenState createState() => _CatalogScreenState();
+  _ShoppingListScreenState createState() => _ShoppingListScreenState();
 }
 
-class _CatalogScreenState extends State<CatalogScreen>
+class _ShoppingListScreenState extends State<ShoppingListScreen>
     with SingleTickerProviderStateMixin {
   ScrollController _scrollViewController;
   TabController _tabController;
@@ -19,7 +19,7 @@ class _CatalogScreenState extends State<CatalogScreen>
     super.initState();
     _scrollViewController = new ScrollController();
     _tabController =
-        new TabController(vsync: this, length: store_names.length + 1);
+        new TabController(vsync: this, length: store_names.length + 2);
   }
 
   @override
@@ -37,14 +37,15 @@ class _CatalogScreenState extends State<CatalogScreen>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              title: Text('Catalog'),
+              title: Text('Shopping list'),
               pinned: true,
               floating: true,
               forceElevated: innerBoxIsScrolled,
               bottom: TabBar(
                 isScrollable: true,
                 tabs: store_names.map((name) => Tab(text: name)).toList()
-                  ..insert(0, Tab(icon: Icon(Icons.store_mall_directory))),
+                  ..insert(0, Tab(icon: Icon(Icons.indeterminate_check_box)))
+                  ..insert(0, Tab(icon: Icon(Icons.shopping_basket))),
                 controller: _tabController,
               ),
             ),
@@ -54,6 +55,7 @@ class _CatalogScreenState extends State<CatalogScreen>
           children: store_names
               .map((name) => ItemsWidget(tagNameToFilter: name))
               .toList()
+                ..insert(0, ItemsWidget(tagNameToFilter: ''))
                 ..insert(0, ItemsWidget()),
           controller: _tabController,
         ),

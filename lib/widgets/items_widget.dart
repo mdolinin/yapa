@@ -10,13 +10,25 @@ typedef ItemFilter = bool Function(Item);
 class ItemsWidget extends StatelessWidget {
   final String tagNameToFilter;
 
-  const ItemsWidget({Key key, this.tagNameToFilter = ''}) : super(key: key);
+  const ItemsWidget({Key key, this.tagNameToFilter}) : super(key: key);
+
+  ItemFilter _filterFromTagName() {
+    ItemFilter defaultFilter = (item) => true;
+    ItemFilter filterNoTag = (item) => item.tags.isEmpty;
+    ItemFilter filterByTag = (item) => item.tags.contains(tagNameToFilter);
+    ItemFilter filter;
+    if (tagNameToFilter == null) {
+      filter = defaultFilter;
+    } else if (tagNameToFilter == '') {
+      filter = filterNoTag;
+    } else {
+      filter = filterByTag;
+    }
+    return filter;
+  }
 
   @override
   Widget build(BuildContext context) {
-    ItemFilter defaultFilter = (item) => true;
-    ItemFilter filterByTag = (item) => item.tags.contains(tagNameToFilter);
-    ItemFilter filter = tagNameToFilter == '' ? defaultFilter : filterByTag;
     return BlocBuilder<ItemsBloc, ItemsState>(
       builder: (context, state) {
         if (state is ItemsLoading) {
@@ -24,7 +36,7 @@ class ItemsWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is ItemsLoaded) {
-          final items = state.items.where(filter).toList();
+          final items = state.items.where(_filterFromTagName()).toList();
           return ListView.builder(
             itemCount: items.length,
             itemBuilder: (BuildContext context, index) {

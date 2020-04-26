@@ -15,8 +15,8 @@ void main() {
       child: YapaApp(),
     ));
 
-    // Verify that our app shows Catalog.
-    expect(find.text('Catalog'), findsOneWidget);
+    // Verify that our app shows Shopping list.
+    expect(find.text('Shopping list'), findsOneWidget);
     expect(find.text('Not existing text'), findsNothing);
 
     // Wait for items loaded.
@@ -27,7 +27,7 @@ void main() {
     await tester.pump();
 
     // Verify that nothing changed.
-    expect(find.text('Catalog'), findsOneWidget);
+    expect(find.text('Shopping list'), findsOneWidget);
     expect(find.text('Not existing text'), findsNothing);
   });
 }

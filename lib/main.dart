@@ -12,7 +12,7 @@ import 'package:yapa/repository/hive_items_repository.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/routes.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
-import 'package:yapa/screens/catalog_screen.dart';
+import 'package:yapa/screens/shopping_list_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
 void main() async {
@@ -38,7 +38,7 @@ class YapaApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       routes: {
-        Routes.home: (context) => CatalogScreen(),
+        Routes.home: (context) => ShoppingListScreen(),
         Routes.addItem: (context) => AddEditScreen(
               onSave: (Item item) {
                 BlocProvider.of<ItemsBloc>(context).add(AddItem(item));
