@@ -1,7 +1,9 @@
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -59,36 +61,32 @@ class ItemsWidget extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (BuildContext context, index) {
               final item = items[index];
-              return Dismissible(
+              return Slidable(
                 key: Key('Item__${item.id}'),
-                direction: DismissDirection.startToEnd,
-                dismissThresholds: {DismissDirection.startToEnd: 0.1},
-                background: Container(
-                  color: Theme.of(context).errorColor,
-                  padding: EdgeInsets.all(12.0),
-                  alignment: Alignment.centerLeft,
-                  child: Icon(Icons.delete_forever),
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.25,
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption: 'Edit',
+                    color: Colors.blueGrey,
+                    icon: Icons.edit,
+                    onTap: () => _openEditScreen(context, item),
+                  ),
+                  IconSlideAction(
+                    caption: 'Delete',
+                    color: Theme.of(context).errorColor,
+                    icon: Icons.delete,
+                    onTap: () => _deleteItemWithSnackBar(context, item),
+                  ),
+                ],
+                dismissal: SlidableDismissal(
+                  child: SlidableDrawerDismissal(),
+                  onDismissed: (actionType) {
+                    if (actionType == SlideActionType.secondary) {
+                      _deleteItemWithSnackBar(context, item);
+                    }
+                  },
                 ),
-                onDismissed: (direction) {
-                  BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        "${item.name} deleted",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      duration: Duration(seconds: 2),
-                      action: SnackBarAction(
-                        label: 'Undo',
-                        onPressed: () {
-                          BlocProvider.of<ItemsBloc>(context)
-                              .add(AddItem(item));
-                        },
-                      ),
-                    ),
-                  );
-                },
                 child: Card(
                   color: item.selected
                       ? Theme.of(context).buttonColor
@@ -130,6 +128,42 @@ class ItemsWidget extends StatelessWidget {
           return Container();
         }
       },
+    );
+  }
+
+  void _openEditScreen(BuildContext context, Item item) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (BuildContext context) {
+        return AddEditScreen(
+          onSave: (Item updatedItem) {
+            BlocProvider.of<ItemsBloc>(context).add(
+              UpdateItem(updatedItem.copyWith(id: item.id)),
+            );
+          },
+          isEditing: true,
+          item: item,
+        );
+      }),
+    );
+  }
+
+  void _deleteItemWithSnackBar(BuildContext context, Item item) {
+    BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "${item.name} deleted",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        duration: Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            BlocProvider.of<ItemsBloc>(context).add(AddItem(item));
+          },
+        ),
+      ),
     );
   }
 }
