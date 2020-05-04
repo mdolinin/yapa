@@ -1,6 +1,7 @@
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
@@ -83,6 +84,7 @@ class ItemsWidget extends StatelessWidget {
                   child: SlidableDrawerDismissal(),
                   onDismissed: (actionType) {
                     if (actionType == SlideActionType.secondary) {
+                      HapticFeedback.mediumImpact();
                       _deleteItemWithSnackBar(context, item);
                     }
                   },
