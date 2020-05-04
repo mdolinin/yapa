@@ -23,13 +23,14 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       fields[3] as bool,
       fields[4] as String,
       (fields[5] as List)?.cast<String>(),
+      fields[6] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemEntity obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,6 +42,8 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       ..writeByte(4)
       ..write(obj.pathToImage)
       ..writeByte(5)
-      ..write(obj.tags);
+      ..write(obj.tags)
+      ..writeByte(6)
+      ..write(obj.category);
   }
 }

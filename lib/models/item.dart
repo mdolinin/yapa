@@ -9,6 +9,7 @@ class Item extends Equatable {
   final bool selected;
   final String pathToImage;
   final List<String> tags;
+  final String category;
 
   Item(
     this.name, {
@@ -16,10 +17,12 @@ class Item extends Equatable {
     String volume = '',
     String pathToImage = '',
     List<String> tags = const [],
+    String category = '',
     String id,
   })  : this.volume = volume ?? '',
         this.pathToImage = pathToImage ?? '',
         this.tags = tags ?? [],
+        this.category = category ?? '',
         this.id = id ?? Uuid().v4();
 
   Item copyWith(
@@ -28,7 +31,8 @@ class Item extends Equatable {
       String volume,
       String name,
       String pathToImage,
-      List<String> tags}) {
+      List<String> tags,
+      String category}) {
     return Item(
       name ?? this.name,
       selected: selected ?? this.selected,
@@ -36,19 +40,21 @@ class Item extends Equatable {
       volume: volume ?? this.volume,
       pathToImage: pathToImage ?? this.pathToImage,
       tags: tags ?? this.tags,
+      category: category ?? this.category,
     );
   }
 
   @override
-  List<Object> get props => [selected, id, volume, name, pathToImage, tags];
+  List<Object> get props =>
+      [selected, id, volume, name, pathToImage, tags, category];
 
   @override
   String toString() {
-    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags }';
+    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, category: $category }';
   }
 
   ItemEntity toEntity() {
-    return ItemEntity(name, id, volume, selected, pathToImage, tags);
+    return ItemEntity(name, id, volume, selected, pathToImage, tags, category);
   }
 
   static Item fromEntity(ItemEntity entity) {
@@ -59,6 +65,7 @@ class Item extends Equatable {
       id: entity.id ?? Uuid().v4(),
       pathToImage: entity.pathToImage,
       tags: entity.tags,
+      category: entity.category,
     );
   }
 }

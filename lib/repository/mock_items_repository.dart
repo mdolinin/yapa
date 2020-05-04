@@ -20,6 +20,7 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/1.jpeg',
                 ['Aldi', 'Wallmart', 'Bravo'],
+                'Bread and Cookies',
               ),
               ItemEntity(
                 'Cookies Choc. Chips',
@@ -28,6 +29,7 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/2.jpeg',
                 ['Wallmart', 'Bravo'],
+                'Bread and Cookies',
               ),
               ItemEntity(
                 'Crackers',
@@ -36,6 +38,7 @@ class MockItemsRepository implements ItemsRepository {
                 true,
                 'images/3.jpeg',
                 ['Aldi', 'Bravo'],
+                'Bread and Cookies',
               ),
               ItemEntity(
                 'Pretzels',
@@ -44,15 +47,10 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/4.jpeg',
                 ['Dollar Tree', 'Bravo'],
+                'Bread and Cookies',
               ),
-              ItemEntity(
-                'Italian Loaf',
-                '5',
-                '14 oz',
-                true,
-                'images/5.jpeg',
-                ['Aldi', 'Wallmart', 'Dollar Tree'],
-              ),
+              ItemEntity('Italian Loaf', '5', '14 oz', true, 'images/5.jpeg',
+                  ['Aldi', 'Wallmart', 'Dollar Tree'], 'Bread and Cookies'),
             ]);
   }
 
