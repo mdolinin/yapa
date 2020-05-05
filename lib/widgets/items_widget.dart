@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,90 +40,131 @@ class ItemsWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is ItemsLoaded) {
-          final items = state.items.where(_filterFromTagName()).toList()
-            ..sort(
-                (a, b) => b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
+          final List<Item> filteredAndSortedList = state.items
+              .where(_filterFromTagName())
+              .toList()
+                ..sort((a, b) =>
+                    b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
+          final List<MapEntry<String, List<Item>>> categoriesToItems = groupBy(
+                  filteredAndSortedList,
+                  (Item item) => '${item.category}__${item.selected}')
+              .entries
+              .toList();
           return ListView.separated(
             separatorBuilder: (context, index) {
-              if (!items[index].selected && items[index + 1].selected) {
-                return Card(
-                  color: Theme.of(context).dividerColor,
-                  child: ListTile(
-                    dense: true,
-                    title: Center(
-                      child: Text('Already bought',
-                          style: Theme.of(context).textTheme.headline5),
+              final category = categoriesToItems[index];
+              bool selected = category.key.endsWith('__true');
+              if (!selected &&
+                  categoriesToItems[index + 1].key.endsWith('__true')) {
+                return Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 5.0, right: 10.0),
+                        child: Divider(
+                          color: Theme.of(context).primaryColorDark,
+                          thickness: 3.0,
+                        ),
+                      ),
                     ),
-                  ),
+                    Text('ALREADY BOUGHT',
+                        style: Theme.of(context).textTheme.headline5),
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10.0, right: 5.0),
+                        child: Divider(
+                          color: Theme.of(context).primaryColorDark,
+                          thickness: 3.0,
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               } else {
                 return SizedBox.shrink();
               }
             },
-            itemCount: items.length,
+            itemCount: categoriesToItems.length,
             itemBuilder: (BuildContext context, index) {
-              final item = items[index];
-              return Slidable(
-                key: Key('Item__${item.id}'),
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    caption: 'Edit',
-                    color: Colors.blueGrey,
-                    icon: Icons.edit,
-                    onTap: () => _openEditScreen(context, item),
-                  ),
-                  IconSlideAction(
-                    caption: 'Delete',
-                    color: Theme.of(context).errorColor,
-                    icon: Icons.delete,
-                    onTap: () => _deleteItemWithSnackBar(context, item),
-                  ),
-                ],
-                dismissal: SlidableDismissal(
-                  child: SlidableDrawerDismissal(),
-                  onDismissed: (actionType) {
-                    if (actionType == SlideActionType.secondary) {
-                      HapticFeedback.mediumImpact();
-                      _deleteItemWithSnackBar(context, item);
-                    }
-                  },
-                ),
-                child: Card(
-                  color: item.selected
-                      ? Theme.of(context).buttonColor
-                      : Theme.of(context).cardColor,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 44.0,
-                      backgroundColor: Colors.transparent,
-                      child: item.pathToImage == ''
-                          ? FlutterLogo(size: 44.0)
-                          : Image(
-                              image: AssetImage(
-                                  '${FileUtils.absolutePath(item.pathToImage)}'),
-                            ),
-                    ),
-                    title: Text(item.name),
-                    subtitle: Text(item.volume),
-                    trailing: Checkbox(
-                      value: item.selected,
-                      onChanged: (bool value) {
-                        BlocProvider.of<ItemsBloc>(context).add(
-                          UpdateItem(item.copyWith(selected: value)),
-                        );
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => DetailsScreen(id: item.id),
+              final category = categoriesToItems[index];
+              var categoryName =
+                  category.key.replaceAll(RegExp('__false|__true'), '');
+              return ExpansionTile(
+                title: categoryName == ''
+                    ? Text(
+                        'No category',
+                        style: Theme.of(context).textTheme.subtitle1,
+                      )
+                    : Text('$categoryName'),
+                leading: categoryName == '' ? Icon(Icons.category) : null,
+                key: PageStorageKey<String>(category.key),
+                initiallyExpanded: true,
+                children: category.value
+                    .map(
+                      (item) => Slidable(
+                        key: Key('Item__${item.id}'),
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
+                        secondaryActions: <Widget>[
+                          IconSlideAction(
+                            caption: 'Edit',
+                            color: Colors.blueGrey,
+                            icon: Icons.edit,
+                            onTap: () => _openEditScreen(context, item),
+                          ),
+                          IconSlideAction(
+                            caption: 'Delete',
+                            color: Theme.of(context).errorColor,
+                            icon: Icons.delete,
+                            onTap: () => _deleteItemWithSnackBar(context, item),
+                          ),
+                        ],
+                        dismissal: SlidableDismissal(
+                          child: SlidableDrawerDismissal(),
+                          onDismissed: (actionType) {
+                            if (actionType == SlideActionType.secondary) {
+                              HapticFeedback.mediumImpact();
+                              _deleteItemWithSnackBar(context, item);
+                            }
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
+                        child: Card(
+                          color: item.selected
+                              ? Theme.of(context).buttonColor
+                              : Theme.of(context).cardColor,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 44.0,
+                              backgroundColor: Colors.transparent,
+                              child: item.pathToImage == ''
+                                  ? FlutterLogo(size: 44.0)
+                                  : Image(
+                                      image: AssetImage(
+                                          '${FileUtils.absolutePath(item.pathToImage)}'),
+                                    ),
+                            ),
+                            title: Text(item.name),
+                            subtitle: Text(item.volume),
+                            trailing: Checkbox(
+                              value: item.selected,
+                              onChanged: (bool value) {
+                                BlocProvider.of<ItemsBloc>(context).add(
+                                  UpdateItem(item.copyWith(selected: value)),
+                                );
+                              },
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => DetailsScreen(id: item.id),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               );
             },
           );
