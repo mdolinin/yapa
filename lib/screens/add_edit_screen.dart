@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/repository/category_repository.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -68,6 +69,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   _item = _item.copyWith(name: value);
                 },
               ),
+              Divider(),
               TextFormField(
                 initialValue: _item.volume,
                 decoration: InputDecoration(hintText: 'Enter item volume'),
@@ -76,6 +78,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   _item = _item.copyWith(volume: value);
                 },
               ),
+              Divider(),
               Wrap(
                 alignment: WrapAlignment.spaceAround,
                 children: store_names
@@ -100,9 +103,27 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     )
                     .toList(),
               ),
+              Divider(),
+              Wrap(
+                alignment: WrapAlignment.spaceAround,
+                children: category_names
+                    .map(
+                      (name) => ChoiceChip(
+                        label: Text('$name'),
+                        selected: _item.category == name,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _item = _item.copyWith(category: name);
+                          });
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+              Divider(),
               SwitchListTile(
                 title: Text(
-                  'Select',
+                  'Already bought',
                   style: textTheme.headline5,
                 ),
                 value: _item.selected,
@@ -112,6 +133,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   });
                 },
               ),
+              Divider(),
               ListTile(
                 onTap: () {
                   _showPhotoLibrary();

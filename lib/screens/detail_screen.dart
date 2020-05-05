@@ -50,6 +50,19 @@ class DetailsScreen extends StatelessWidget {
                       .toList(),
                 ),
               ),
+              Center(
+                child: item.category == ''
+                    ? Chip(
+                        label: Text('No category'),
+                      )
+                    : Chip(
+                        label: Text('${item.category}'),
+                        labelStyle:
+                            Theme.of(context).chipTheme.secondaryLabelStyle,
+                        backgroundColor:
+                            Theme.of(context).chipTheme.secondarySelectedColor,
+                      ),
+              ),
               item.selected
                   ? Icon(Icons.check_box)
                   : Icon(Icons.check_box_outline_blank),
