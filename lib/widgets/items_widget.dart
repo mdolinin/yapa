@@ -92,12 +92,27 @@ class ItemsWidget extends StatelessWidget {
               var categoryName =
                   category.key.replaceAll(RegExp('__false|__true'), '');
               return ExpansionTile(
-                title: categoryName == ''
-                    ? Text(
-                        'No category',
-                        style: Theme.of(context).textTheme.subtitle1,
-                      )
-                    : Text('$categoryName'),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Flexible(
+                      child: categoryName == ''
+                          ? Text(
+                              'No category',
+                              style: Theme.of(context).textTheme.subtitle1,
+                            )
+                          : Text('$categoryName'),
+                    ),
+                    SizedBox(width: 10.0),
+                    Chip(
+                      label: Text('${category.value.length}'),
+                      labelStyle:
+                          Theme.of(context).chipTheme.secondaryLabelStyle,
+                      backgroundColor:
+                          Theme.of(context).chipTheme.secondarySelectedColor,
+                    ),
+                  ],
+                ),
                 leading: categoryName == '' ? Icon(Icons.category) : null,
                 key: PageStorageKey<String>(category.key),
                 initiallyExpanded: true,
