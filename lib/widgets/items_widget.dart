@@ -43,6 +43,8 @@ class ItemsWidget extends StatelessWidget {
           final List<Item> filteredAndSortedList = state.items
               .where(_filterFromTagName())
               .toList()
+                ..sort((a, b) => a.name.compareTo(b.name))
+                ..sort((a, b) => a.category.compareTo(b.category))
                 ..sort((a, b) =>
                     b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
           final List<MapEntry<String, List<Item>>> categoriesToItems = groupBy(
