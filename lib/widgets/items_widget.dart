@@ -5,25 +5,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/repository/category_repository.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
 typedef ItemFilter = bool Function(Item);
 
-class ItemsWidget extends StatelessWidget {
+class ItemsWidget extends StatefulWidget {
   final String tagNameToFilter;
 
   const ItemsWidget({Key key, this.tagNameToFilter}) : super(key: key);
 
+  @override
+  _ItemsWidgetState createState() => _ItemsWidgetState();
+}
+
+class _ItemsWidgetState extends State<ItemsWidget> {
+  List<String> orderedCategories = category_names.toList()..insert(0, '');
+
   ItemFilter _filterFromTagName() {
     ItemFilter defaultFilter = (item) => true;
     ItemFilter filterNoTag = (item) => item.tags.isEmpty;
-    ItemFilter filterByTag = (item) => item.tags.contains(tagNameToFilter);
+    ItemFilter filterByTag =
+        (item) => item.tags.contains(widget.tagNameToFilter);
     ItemFilter filter;
-    if (tagNameToFilter == null) {
+    if (widget.tagNameToFilter == null) {
       filter = defaultFilter;
-    } else if (tagNameToFilter == '') {
+    } else if (widget.tagNameToFilter == '') {
       filter = filterNoTag;
     } else {
       filter = filterByTag;
@@ -44,7 +53,9 @@ class ItemsWidget extends StatelessWidget {
               .where(_filterFromTagName())
               .toList()
                 ..sort((a, b) => a.name.compareTo(b.name))
-                ..sort((a, b) => a.category.compareTo(b.category))
+                ..sort((a, b) => orderedCategories
+                    .indexOf(a.category)
+                    .compareTo(orderedCategories.indexOf(b.category)))
                 ..sort((a, b) =>
                     b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
           final List<MapEntry<String, List<Item>>> categoriesToItems = groupBy(
@@ -52,43 +63,26 @@ class ItemsWidget extends StatelessWidget {
                   (Item item) => '${item.category}__${item.selected}')
               .entries
               .toList();
-          return ListView.separated(
-            separatorBuilder: (context, index) {
-              final category = categoriesToItems[index];
-              bool selected = category.key.endsWith('__true');
-              if (!selected &&
-                  categoriesToItems[index + 1].key.endsWith('__true')) {
-                return Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.only(left: 5.0, right: 10.0),
-                        child: Divider(
-                          color: Theme.of(context).primaryColorDark,
-                          thickness: 3.0,
-                        ),
-                      ),
-                    ),
-                    Text('ALREADY BOUGHT',
-                        style: Theme.of(context).textTheme.headline5),
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.only(left: 10.0, right: 5.0),
-                        child: Divider(
-                          color: Theme.of(context).primaryColorDark,
-                          thickness: 3.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return SizedBox.shrink();
+          return ReorderableListView(
+            onReorder: (int oldIndex, int newIndex) {
+              if (oldIndex < newIndex) {
+                // removing the item at oldIndex will shorten the list by 1.
+                newIndex -= 1;
               }
+              String categoryFrom = categoriesToItems[oldIndex]
+                  .key
+                  .replaceAll(RegExp('__false|__true'), '');
+              String categoryTo = categoriesToItems[newIndex]
+                  .key
+                  .replaceAll(RegExp('__false|__true'), '');
+              int indexFrom = orderedCategories.indexOf(categoryFrom);
+              int indexTo = orderedCategories.indexOf(categoryTo);
+              setState(() {
+                final category = orderedCategories.removeAt(indexFrom);
+                orderedCategories.insert(indexTo, category);
+              });
             },
-            itemCount: categoriesToItems.length,
-            itemBuilder: (BuildContext context, index) {
-              final category = categoriesToItems[index];
+            children: categoriesToItems.map((category) {
               var categoryName =
                   category.key.replaceAll(RegExp('__false|__true'), '');
               return ExpansionTile(
@@ -183,7 +177,7 @@ class ItemsWidget extends StatelessWidget {
                     )
                     .toList(),
               );
-            },
+            }).toList(),
           );
         } else {
           return Container();

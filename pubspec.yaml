@@ -34,6 +34,7 @@ dev_dependencies:
 
 dependency_overrides:
   quiver: ^2.0.5
+  path: ^1.6.0
 
 flutter:
   uses-material-design: true
