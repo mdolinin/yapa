@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
-import 'package:yapa/widgets/items_widget.dart';
+import 'package:yapa/widgets/shopping_list_widget.dart';
 
 class ShoppingListScreen extends StatefulWidget {
   @override
@@ -90,10 +90,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         },
         body: TabBarView(
           children: store_names
-              .map((name) => ItemsWidget(tagNameToFilter: name))
+              .map((name) => ShoppingListWidget(tagNameToFilter: name))
               .toList()
-                ..insert(0, ItemsWidget(tagNameToFilter: ''))
-                ..insert(0, ItemsWidget()),
+                ..insert(0, ShoppingListWidget(tagNameToFilter: ''))
+                ..insert(0, ShoppingListWidget()),
           controller: _tabController,
         ),
       ),

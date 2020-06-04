@@ -4,26 +4,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:yapa/bloc/items/items.dart';
+import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
-import 'package:yapa/repository/category_repository.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
 typedef ItemFilter = bool Function(Item);
 
-class ItemsWidget extends StatefulWidget {
+class ShoppingListWidget extends StatefulWidget {
   final String tagNameToFilter;
 
-  const ItemsWidget({Key key, this.tagNameToFilter}) : super(key: key);
+  const ShoppingListWidget({Key key, this.tagNameToFilter}) : super(key: key);
 
   @override
-  _ItemsWidgetState createState() => _ItemsWidgetState();
+  _ShoppingListWidgetState createState() => _ShoppingListWidgetState();
 }
 
-class _ItemsWidgetState extends State<ItemsWidget> {
-  List<String> orderedCategories = category_names.toList()..insert(0, '');
-
+class _ShoppingListWidgetState extends State<ShoppingListWidget> {
   ItemFilter _filterFromTagName() {
     ItemFilter defaultFilter = (item) => true;
     ItemFilter filterNoTag = (item) => item.tags.isEmpty;
@@ -40,6 +38,20 @@ class _ItemsWidgetState extends State<ItemsWidget> {
     return filter;
   }
 
+  FilteredShoppingList from(String tag, List<Item> items) {
+    final List<Item> filteredByTag = items.where(_filterFromTagName()).toList();
+    final List<Item> sortedByName = filteredByTag
+      ..sort((a, b) => a.name.compareTo(b.name));
+    final Map<String, List<Item>> groupedByCategory =
+        groupBy(sortedByName, (Item item) => item.category);
+    final List<FilteredCategory> filteredCategories = groupedByCategory.entries
+        .toList()
+        .map((MapEntry<String, List<Item>> entry) =>
+            FilteredCategory(entry.key, entry.value))
+        .toList();
+    return FilteredShoppingList(tag, filteredCategories);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ItemsBloc, ItemsState>(
@@ -49,57 +61,25 @@ class _ItemsWidgetState extends State<ItemsWidget> {
             child: CircularProgressIndicator(),
           );
         } else if (state is ItemsLoaded) {
-          final List<Item> filteredAndSortedList = state.items
-              .where(_filterFromTagName())
-              .toList()
-                ..sort((a, b) => a.name.compareTo(b.name))
-                ..sort((a, b) => orderedCategories
-                    .indexOf(a.category)
-                    .compareTo(orderedCategories.indexOf(b.category)))
-                ..sort((a, b) =>
-                    b.selected == a.selected ? 0 : (a.selected ? 1 : -1));
-          final List<MapEntry<String, List<Item>>> categoriesToItems = groupBy(
-                  filteredAndSortedList,
-                  (Item item) => '${item.category}__${item.selected}')
-              .entries
-              .toList();
-          return ReorderableListView(
-            onReorder: (int oldIndex, int newIndex) {
-              if (oldIndex < newIndex) {
-                // removing the item at oldIndex will shorten the list by 1.
-                newIndex -= 1;
-              }
-              String categoryFrom = categoriesToItems[oldIndex]
-                  .key
-                  .replaceAll(RegExp('__false|__true'), '');
-              String categoryTo = categoriesToItems[newIndex]
-                  .key
-                  .replaceAll(RegExp('__false|__true'), '');
-              int indexFrom = orderedCategories.indexOf(categoryFrom);
-              int indexTo = orderedCategories.indexOf(categoryTo);
-              setState(() {
-                final category = orderedCategories.removeAt(indexFrom);
-                orderedCategories.insert(indexTo, category);
-              });
-            },
-            children: categoriesToItems.map((category) {
-              var categoryName =
-                  category.key.replaceAll(RegExp('__false|__true'), '');
+          final FilteredShoppingList filteredShoppingList =
+              from(widget.tagNameToFilter, state.items);
+          return ListView(
+            children: filteredShoppingList.categories.map((category) {
               return ExpansionTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Flexible(
-                      child: categoryName == ''
+                      child: category.name == ''
                           ? Text(
                               'No category',
                               style: Theme.of(context).textTheme.subtitle1,
                             )
-                          : Text('$categoryName'),
+                          : Text('${category.name}'),
                     ),
                     SizedBox(width: 10.0),
                     Chip(
-                      label: Text('${category.value.length}'),
+                      label: Text('${category.items.length}'),
                       labelStyle:
                           Theme.of(context).chipTheme.secondaryLabelStyle,
                       backgroundColor:
@@ -107,10 +87,11 @@ class _ItemsWidgetState extends State<ItemsWidget> {
                     ),
                   ],
                 ),
-                leading: categoryName == '' ? Icon(Icons.category) : null,
-                key: PageStorageKey<String>(category.key),
+                leading: category.name == '' ? Icon(Icons.category) : null,
+                key: PageStorageKey<String>(
+                    "${filteredShoppingList.tag}__${category.name}"),
                 initiallyExpanded: true,
-                children: category.value
+                children: category.items
                     .map(
                       (item) => Slidable(
                         key: Key('Item__${item.id}'),
@@ -139,38 +120,45 @@ class _ItemsWidgetState extends State<ItemsWidget> {
                             }
                           },
                         ),
-                        child: Card(
-                          color: item.selected
-                              ? Theme.of(context).buttonColor
-                              : Theme.of(context).cardColor,
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 44.0,
-                              backgroundColor: Colors.transparent,
-                              child: item.pathToImage == ''
-                                  ? FlutterLogo(size: 44.0)
-                                  : Image(
-                                      image: AssetImage(
-                                          '${FileUtils.absolutePath(item.pathToImage)}'),
-                                    ),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 15.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
                             ),
-                            title: Text(item.name),
-                            subtitle: Text(item.volume),
-                            trailing: Checkbox(
-                              value: item.selected,
-                              onChanged: (bool value) {
-                                BlocProvider.of<ItemsBloc>(context).add(
-                                  UpdateItem(item.copyWith(selected: value)),
+                            elevation: 0.5,
+                            color: item.selected
+                                ? Theme.of(context).buttonColor
+                                : Theme.of(context).cardColor,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 44.0,
+                                backgroundColor: Colors.transparent,
+                                child: item.pathToImage == ''
+                                    ? FlutterLogo(size: 44.0)
+                                    : Image(
+                                        image: AssetImage(
+                                            '${FileUtils.absolutePath(item.pathToImage)}'),
+                                      ),
+                              ),
+                              title: Text(item.name),
+                              subtitle: Text(item.volume),
+                              trailing: Checkbox(
+                                value: item.selected,
+                                onChanged: (bool value) {
+                                  BlocProvider.of<ItemsBloc>(context).add(
+                                    UpdateItem(item.copyWith(selected: value)),
+                                  );
+                                },
+                              ),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => DetailsScreen(id: item.id),
+                                  ),
                                 );
                               },
                             ),
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => DetailsScreen(id: item.id),
-                                ),
-                              );
-                            },
                           ),
                         ),
                       ),
