@@ -6,6 +6,7 @@ import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
+import 'package:yapa/widgets/category_title_widget.dart';
 import 'package:yapa/widgets/item_tile_widget.dart';
 
 typedef ItemFilter = bool Function(Item);
@@ -64,26 +65,9 @@ class _ShoppingListWidgetState extends State<ShoppingListWidget> {
           return ListView(
             children: filteredShoppingList.categories.map((category) {
               return ExpansionTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      child: category.name == ''
-                          ? Text(
-                              'No category',
-                              style: Theme.of(context).textTheme.subtitle1,
-                            )
-                          : Text('${category.name}'),
-                    ),
-                    SizedBox(width: 10.0),
-                    Chip(
-                      label: Text('${category.items.length}'),
-                      labelStyle:
-                          Theme.of(context).chipTheme.secondaryLabelStyle,
-                      backgroundColor:
-                          Theme.of(context).chipTheme.secondarySelectedColor,
-                    ),
-                  ],
+                title: CategoryTitleWidget(
+                  name: category.name,
+                  itemCount: category.items.length,
                 ),
                 leading: category.name == '' ? Icon(Icons.category) : null,
                 key: PageStorageKey<String>(
