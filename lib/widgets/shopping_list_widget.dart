@@ -1,14 +1,12 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
-import 'package:yapa/utils/file_utils.dart';
+import 'package:yapa/widgets/item_tile_widget.dart';
 
 typedef ItemFilter = bool Function(Item);
 
@@ -92,77 +90,12 @@ class _ShoppingListWidgetState extends State<ShoppingListWidget> {
                     "${filteredShoppingList.tag}__${category.name}"),
                 initiallyExpanded: true,
                 children: category.items
-                    .map(
-                      (item) => Slidable(
-                        key: Key('Item__${item.id}'),
-                        actionPane: SlidableDrawerActionPane(),
-                        actionExtentRatio: 0.25,
-                        secondaryActions: <Widget>[
-                          IconSlideAction(
-                            caption: 'Edit',
-                            color: Colors.blueGrey,
-                            icon: Icons.edit,
-                            onTap: () => _openEditScreen(context, item),
-                          ),
-                          IconSlideAction(
-                            caption: 'Delete',
-                            color: Theme.of(context).errorColor,
-                            icon: Icons.delete,
-                            onTap: () => _deleteItemWithSnackBar(context, item),
-                          ),
-                        ],
-                        dismissal: SlidableDismissal(
-                          child: SlidableDrawerDismissal(),
-                          onDismissed: (actionType) {
-                            if (actionType == SlideActionType.secondary) {
-                              HapticFeedback.mediumImpact();
-                              _deleteItemWithSnackBar(context, item);
-                            }
-                          },
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 15.0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            elevation: 0.5,
-                            color: item.selected
-                                ? Theme.of(context).buttonColor
-                                : Theme.of(context).cardColor,
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                radius: 44.0,
-                                backgroundColor: Colors.transparent,
-                                child: item.pathToImage == ''
-                                    ? FlutterLogo(size: 44.0)
-                                    : Image(
-                                        image: AssetImage(
-                                            '${FileUtils.absolutePath(item.pathToImage)}'),
-                                      ),
-                              ),
-                              title: Text(item.name),
-                              subtitle: Text(item.volume),
-                              trailing: Checkbox(
-                                value: item.selected,
-                                onChanged: (bool value) {
-                                  BlocProvider.of<ItemsBloc>(context).add(
-                                    UpdateItem(item.copyWith(selected: value)),
-                                  );
-                                },
-                              ),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => DetailsScreen(id: item.id),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
+                    .map((item) => ItemTileWidget(
+                        item: item,
+                        onSelect: _toggleItemSelection(context),
+                        onEdit: _openEditScreen(context),
+                        onDelete: _deleteItemWithSnackBar(context),
+                        onTap: _openDetailsScreen(context)))
                     .toList(),
               );
             }).toList(),
@@ -174,39 +107,61 @@ class _ShoppingListWidgetState extends State<ShoppingListWidget> {
     );
   }
 
-  void _openEditScreen(BuildContext context, Item item) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (BuildContext context) {
-        return AddEditScreen(
-          onSave: (Item updatedItem) {
-            BlocProvider.of<ItemsBloc>(context).add(
-              UpdateItem(updatedItem.copyWith(id: item.id)),
-            );
-          },
-          isEditing: true,
-          item: item,
-        );
-      }),
-    );
+  Function _toggleItemSelection(BuildContext context) {
+    return (Item item, bool value) {
+      BlocProvider.of<ItemsBloc>(context).add(
+        UpdateItem(item.copyWith(selected: value)),
+      );
+    };
   }
 
-  void _deleteItemWithSnackBar(BuildContext context, Item item) {
-    BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "${item.name} deleted",
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+  Function _openDetailsScreen(BuildContext context) {
+    return (Item item) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DetailsScreen(id: item.id),
         ),
-        duration: Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            BlocProvider.of<ItemsBloc>(context).add(AddItem(item));
-          },
+      );
+    };
+  }
+
+  Function _openEditScreen(BuildContext context) {
+    return (Item item) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) {
+          return AddEditScreen(
+            onSave: (Item updatedItem) {
+              BlocProvider.of<ItemsBloc>(context).add(
+                UpdateItem(updatedItem.copyWith(id: item.id)),
+              );
+            },
+            isEditing: true,
+            item: item,
+          );
+        }),
+      );
+    };
+  }
+
+  Function _deleteItemWithSnackBar(BuildContext context) {
+    return (Item item) {
+      BlocProvider.of<ItemsBloc>(context).add(DeleteItem(item));
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "${item.name} deleted",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          duration: Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              BlocProvider.of<ItemsBloc>(context).add(AddItem(item));
+            },
+          ),
         ),
-      ),
-    );
+      );
+    };
   }
 }
