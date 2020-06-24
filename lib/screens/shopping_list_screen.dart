@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yapa/bloc/items/items_bloc.dart';
+import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
 import 'package:yapa/widgets/shopping_list_widget.dart';
@@ -89,11 +92,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           ];
         },
         body: TabBarView(
-          children: store_names
-              .map((name) => ShoppingListWidget(tagNameToFilter: name))
-              .toList()
-                ..insert(0, ShoppingListWidget(tagNameToFilter: ''))
-                ..insert(0, ShoppingListWidget()),
+          children:
+              store_names.map((name) => buildShoppingListWidget(name)).toList()
+                ..insert(0, buildShoppingListWidget(''))
+                ..insert(0, buildShoppingListWidget(null)),
           controller: _tabController,
         ),
       ),
@@ -104,5 +106,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Widget buildShoppingListWidget(String tagNameToFilter) {
+    return BlocProvider(
+        create: (BuildContext context) {
+          return FilteredItemsBloc(
+              tagNameToFilter: tagNameToFilter,
+              itemsBloc: BlocProvider.of<ItemsBloc>(context));
+        },
+        child: ShoppingListWidget());
   }
 }

@@ -1,7 +1,7 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
+import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
@@ -9,59 +9,18 @@ import 'package:yapa/screens/detail_screen.dart';
 import 'package:yapa/widgets/category_title_widget.dart';
 import 'package:yapa/widgets/item_tile_widget.dart';
 
-typedef ItemFilter = bool Function(Item);
-
-class ShoppingListWidget extends StatefulWidget {
-  final String tagNameToFilter;
-
-  const ShoppingListWidget({Key key, this.tagNameToFilter}) : super(key: key);
-
-  @override
-  _ShoppingListWidgetState createState() => _ShoppingListWidgetState();
-}
-
-class _ShoppingListWidgetState extends State<ShoppingListWidget> {
-  ItemFilter _filterFromTagName() {
-    ItemFilter defaultFilter = (item) => true;
-    ItemFilter filterNoTag = (item) => item.tags.isEmpty;
-    ItemFilter filterByTag =
-        (item) => item.tags.contains(widget.tagNameToFilter);
-    ItemFilter filter;
-    if (widget.tagNameToFilter == null) {
-      filter = defaultFilter;
-    } else if (widget.tagNameToFilter == '') {
-      filter = filterNoTag;
-    } else {
-      filter = filterByTag;
-    }
-    return filter;
-  }
-
-  FilteredShoppingList from(String tag, List<Item> items) {
-    final List<Item> filteredByTag = items.where(_filterFromTagName()).toList();
-    final List<Item> sortedByName = filteredByTag
-      ..sort((a, b) => a.name.compareTo(b.name));
-    final Map<String, List<Item>> groupedByCategory =
-        groupBy(sortedByName, (Item item) => item.category);
-    final List<FilteredCategory> filteredCategories = groupedByCategory.entries
-        .toList()
-        .map((MapEntry<String, List<Item>> entry) =>
-            FilteredCategory(entry.key, entry.value))
-        .toList();
-    return FilteredShoppingList(tag, filteredCategories);
-  }
-
+class ShoppingListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ItemsBloc, ItemsState>(
+    return BlocBuilder<FilteredItemsBloc, FilteredItemsState>(
       builder: (context, state) {
-        if (state is ItemsLoading) {
+        if (state is FilteredItemsStateLoading) {
           return Center(
             child: CircularProgressIndicator(),
           );
-        } else if (state is ItemsLoaded) {
+        } else if (state is FilteredItemsStateLoaded) {
           final FilteredShoppingList filteredShoppingList =
-              from(widget.tagNameToFilter, state.items);
+              state.filteredShoppingList;
           return ListView(
             children: filteredShoppingList.categories.map((category) {
               return ExpansionTile(
