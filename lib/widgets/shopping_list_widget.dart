@@ -21,27 +21,34 @@ class ShoppingListWidget extends StatelessWidget {
         } else if (state is FilteredItemsStateLoaded) {
           final FilteredShoppingList filteredShoppingList =
               state.filteredShoppingList;
-          return ListView(
-            children: filteredShoppingList.categories.map((category) {
-              return ExpansionTile(
-                title: CategoryTitleWidget(
-                  name: category.name,
-                  itemCount: category.items.length,
-                ),
-                leading: category.name == '' ? Icon(Icons.category) : null,
-                key: PageStorageKey<String>(
-                    "${filteredShoppingList.tag}__${category.name}"),
-                initiallyExpanded: true,
-                children: category.items
-                    .map((item) => ItemTileWidget(
-                        item: item,
-                        onSelect: _toggleItemSelection(context),
-                        onEdit: _openEditScreen(context),
-                        onDelete: _deleteItemWithSnackBar(context),
-                        onTap: _openDetailsScreen(context)))
-                    .toList(),
-              );
-            }).toList(),
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
+            switchInCurve: Curves.easeInOut,
+            switchOutCurve: Curves.linear,
+            child: ListView(
+              key: ValueKey<String>(
+                  "${filteredShoppingList.tag}__${state.selected}"),
+              children: filteredShoppingList.categories.map((category) {
+                return ExpansionTile(
+                  title: CategoryTitleWidget(
+                    name: category.name,
+                    itemCount: category.items.length,
+                  ),
+                  leading: category.name == '' ? Icon(Icons.category) : null,
+                  key: PageStorageKey<String>(
+                      "${filteredShoppingList.tag}__${category.name}"),
+                  initiallyExpanded: true,
+                  children: category.items
+                      .map((item) => ItemTileWidget(
+                          item: item,
+                          onSelect: _toggleItemSelection(context),
+                          onEdit: _openEditScreen(context),
+                          onDelete: _deleteItemWithSnackBar(context),
+                          onTap: _openDetailsScreen(context)))
+                      .toList(),
+                );
+              }).toList(),
+            ),
           );
         } else {
           return Container();
