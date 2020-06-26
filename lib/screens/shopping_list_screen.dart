@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:yapa/bloc/items/items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
+import 'package:yapa/widgets/lite_rolling_switch.dart';
 import 'package:yapa/widgets/shopping_list_widget.dart';
 
 class ShoppingListScreen extends StatefulWidget {
