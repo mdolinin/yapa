@@ -382,6 +382,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  lite_rolling_switch:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "99a9a730e78c6447a4978c9a54264833ff439a62"
+      url: "git@github.com:lulupointu/lite_rolling_switch.git"
+    source: git
+    version: "0.1.1"
   logging:
     dependency: transitive
     description:

@@ -15,6 +15,8 @@ import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/shopping_list_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
+import 'bloc/shopping_list/selected.dart';
+
 void main() async {
   BlocSupervisor.delegate = LoggingBlocDelegate();
   await Hive.initFlutter();
@@ -38,7 +40,9 @@ class YapaApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       routes: {
-        Routes.home: (context) => ShoppingListScreen(),
+        Routes.home: (context) => BlocProvider(
+            create: (BuildContext context) => SelectedBloc(),
+            child: ShoppingListScreen()),
         Routes.addItem: (context) => AddEditScreen(
               onSave: (Item item) {
                 BlocProvider.of<ItemsBloc>(context).add(AddItem(item));

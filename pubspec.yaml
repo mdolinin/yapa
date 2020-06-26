@@ -21,6 +21,9 @@ dependencies:
   hive_flutter: ^0.3.0+2
   flutter_slidable: ^0.5.4
   collection: ^1.14.11
+  lite_rolling_switch:
+    git:
+      url: git@github.com:lulupointu/lite_rolling_switch.git
 
 dev_dependencies:
   flutter_test:
