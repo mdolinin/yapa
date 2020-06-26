@@ -12,11 +12,12 @@ class FilteredItemsStateLoading extends FilteredItemsState {}
 
 class FilteredItemsStateLoaded extends FilteredItemsState {
   final FilteredShoppingList filteredShoppingList;
+  final bool selected;
 
-  FilteredItemsStateLoaded(this.filteredShoppingList);
+  FilteredItemsStateLoaded(this.filteredShoppingList, this.selected);
 
   @override
-  List<Object> get props => [filteredShoppingList];
+  List<Object> get props => [filteredShoppingList, selected];
 
   @override
   bool get stringify => true;

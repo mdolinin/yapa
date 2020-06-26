@@ -16,3 +16,15 @@ class ItemsUpdated extends FilteredItemsEvent {
   @override
   bool get stringify => true;
 }
+
+class FilterUpdated extends FilteredItemsEvent {
+  final bool selected;
+
+  FilterUpdated(this.selected);
+
+  @override
+  List<Object> get props => [selected];
+
+  @override
+  bool get stringify => true;
+}
