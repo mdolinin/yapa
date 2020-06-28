@@ -7,6 +7,7 @@ import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
+import 'package:yapa/widgets/app_drawer.dart';
 import 'package:yapa/widgets/lite_rolling_switch.dart';
 import 'package:yapa/widgets/shopping_list_widget.dart';
 
@@ -38,7 +39,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: _buildDrawer(context),
+      drawer: AppDrawer(),
       body: NestedScrollView(
         controller: _scrollViewController,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -106,46 +107,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           Navigator.pushNamed(context, Routes.addItem);
         },
         child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  Drawer _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: Material(
-        color: Theme.of(context).primaryColor,
-        child: SafeArea(
-          child: Theme(
-            data: ThemeData(brightness: Brightness.dark),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                ListTile(
-                  leading: Text(
-                    'YAPA',
-                    style: Theme.of(context).textTheme.headline3,
-                  ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.shopping_basket),
-                  title: Text('Shopping list'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.view_list),
-                  title: Text('Catalog'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.category),
-                  title: Text('Categories'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
