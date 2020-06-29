@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yapa/routes.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -13,14 +14,14 @@ class AppDrawer extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 ListTile(
-                  leading: Text(
-                    'YAPA',
-                    style: Theme.of(context).textTheme.headline3,
-                  ),
-                ),
+                    leading: Text('YAPA',
+                        style: Theme.of(context).textTheme.headline3)),
+                Divider(thickness: 3.0),
                 ListTile(
                   leading: Icon(Icons.shopping_basket),
                   title: Text('Shopping list'),
+                  onTap: () =>
+                      Navigator.pushReplacementNamed(context, Routes.home),
                 ),
                 ListTile(
                   leading: Icon(Icons.view_list),
@@ -29,6 +30,8 @@ class AppDrawer extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.category),
                   title: Text('Categories'),
+                  onTap: () => Navigator.pushReplacementNamed(
+                      context, Routes.categories),
                 ),
                 ListTile(
                   leading: Icon(Icons.settings),

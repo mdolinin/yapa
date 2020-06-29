@@ -12,6 +12,7 @@ import 'package:yapa/repository/hive_items_repository.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/routes.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
+import 'package:yapa/screens/categories_list_screen.dart';
 import 'package:yapa/screens/shopping_list_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -49,6 +50,9 @@ class YapaApp extends StatelessWidget {
               },
               isEditing: false,
             ),
+        Routes.categories: (context) => BlocProvider(
+            create: (BuildContext context) => SelectedBloc(),
+            child: CategoriesListScreen()),
       },
     );
   }

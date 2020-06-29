@@ -24,9 +24,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
   @override
   void initState() {
     super.initState();
-    _scrollViewController = new ScrollController();
-    _tabController =
-        new TabController(vsync: this, length: store_names.length + 2);
+    _scrollViewController = ScrollController();
+    _tabController = TabController(vsync: this, length: store_names.length + 2);
   }
 
   @override
