@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
 
 abstract class FilteredItemsEvent extends Equatable {
@@ -24,6 +25,18 @@ class FilterUpdated extends FilteredItemsEvent {
 
   @override
   List<Object> get props => [selected];
+
+  @override
+  bool get stringify => true;
+}
+
+class FilteredCategoriesUpdated extends FilteredItemsEvent {
+  final List<FilteredCategory> categories;
+
+  const FilteredCategoriesUpdated(this.categories);
+
+  @override
+  List<Object> get props => [categories];
 
   @override
   bool get stringify => true;

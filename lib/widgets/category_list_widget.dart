@@ -16,17 +16,19 @@ class CategoryListWidget extends StatelessWidget {
           final FilteredShoppingList filteredShoppingList =
               state.filteredShoppingList;
           return ReorderableListView(
-            onReorder: _onReorder(filteredShoppingList.categories),
+            onReorder: _onReorder(context, filteredShoppingList.categories),
             children: filteredShoppingList.categories.map((category) {
               return Card(
                 key: ValueKey<String>(
                     "${filteredShoppingList.tag}__${category.name}"),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
                 elevation: 0.5,
                 child: ListTile(
-                  title: Text(category.name),
+                  title: category.name == ''
+                      ? Text('No category')
+                      : Text(category.name),
                   trailing: Icon(
                     Icons.reorder,
                   ),
@@ -42,13 +44,17 @@ class CategoryListWidget extends StatelessWidget {
     );
   }
 
-  Function _onReorder(List<FilteredCategory> categories) {
+  Function _onReorder(BuildContext context, List<FilteredCategory> categories) {
     return (int oldIndex, int newIndex) {
+      final reorderedCategories = [...categories];
       if (newIndex > oldIndex) {
         newIndex -= 1;
       }
-      final category = categories.removeAt(oldIndex);
-      categories.insert(newIndex, category);
+      final category = reorderedCategories.removeAt(oldIndex);
+      reorderedCategories.insert(newIndex, category);
+      BlocProvider.of<FilteredItemsBloc>(context).add(
+        FilteredCategoriesUpdated(reorderedCategories),
+      );
     };
   }
 }

@@ -72,5 +72,30 @@ void main() {
             from(null, true, [Item('Pretzels', id: '1')]), true),
       ],
     );
+
+    blocTest<FilteredItemsBloc, FilteredItemsEvent, FilteredItemsState>(
+      'should update a list of filtered categories in response to FilteredCategoriesUpdated Event',
+      build: () {
+        final itemsBloc = MockItemsBlock();
+        whenListen(itemsBloc, Stream<ItemsState>.fromIterable([]));
+        final selectedBloc = MockSelectedBlock();
+        whenListen(selectedBloc, Stream<SelectedState>.fromIterable([]));
+        return FilteredItemsBloc(
+            itemsBloc: itemsBloc, selectedBloc: selectedBloc);
+      },
+      act: (FilteredItemsBloc bloc) async {
+        bloc
+          ..add(ItemsUpdated([Item('Crackers', id: '0')]))
+          ..add(FilteredCategoriesUpdated(
+              from(null, false, [Item('Pretzels', id: '1')]).categories));
+      },
+      expect: [
+        FilteredItemsStateLoading(),
+        FilteredItemsStateLoaded(
+            from(null, false, [Item('Crackers', id: '0')]), false),
+        FilteredItemsStateLoaded(
+            from(null, false, [Item('Pretzels', id: '1')]), false),
+      ],
+    );
   });
 }

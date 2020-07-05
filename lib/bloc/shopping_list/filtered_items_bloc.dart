@@ -45,6 +45,8 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
       yield* _maUpdateFilterToState(event);
     } else if (event is ItemsUpdated) {
       yield* _mapItemsUpdatedToState(event);
+    } else if (event is FilteredCategoriesUpdated) {
+      yield* _mapFilteredCategoriesUpdatedToState(event);
     }
   }
 
@@ -64,6 +66,18 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
         : false;
     yield FilteredItemsStateLoaded(
         from(tagNameToFilter, selected, event.items), selected);
+  }
+
+  Stream<FilteredItemsState> _mapFilteredCategoriesUpdatedToState(
+      FilteredCategoriesUpdated event) async* {
+    if (state is FilteredItemsStateLoaded) {
+      final stateLoaded = (state as FilteredItemsStateLoaded);
+      final selected = stateLoaded.selected;
+      final tag = stateLoaded.filteredShoppingList.tag;
+      final categories = [...event.categories];
+      yield FilteredItemsStateLoaded(
+          FilteredShoppingList(tag, categories), selected);
+    }
   }
 
   @override
