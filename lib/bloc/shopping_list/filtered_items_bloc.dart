@@ -8,12 +8,15 @@ import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/bloc/shopping_list/selected_bloc.dart';
 import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/repository/category_repository.dart';
 
 import './filtered_items.dart';
 
 typedef ItemFilter = bool Function(Item);
 
 class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
+  final List<String> defaultCategoriesOrder = category_names.toList()
+    ..insert(0, '');
   final String tagNameToFilter;
   final ItemsBloc itemsBloc;
   final SelectedBloc selectedBloc;
@@ -45,17 +48,25 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
       yield* _maUpdateFilterToState(event);
     } else if (event is ItemsUpdated) {
       yield* _mapItemsUpdatedToState(event);
-    } else if (event is FilteredCategoriesUpdated) {
-      yield* _mapFilteredCategoriesUpdatedToState(event);
+    } else if (event is CategoriesUpdated) {
+      yield* _mapCategoriesUpdatedToState(event);
     }
   }
 
   Stream<FilteredItemsState> _maUpdateFilterToState(
       FilterUpdated event) async* {
-    if (itemsBloc.state is ItemsLoaded) {
-      var items = (itemsBloc.state as ItemsLoaded).items;
-      yield FilteredItemsStateLoaded(
-          from(tagNameToFilter, event.selected, items), event.selected);
+    if (state is FilteredItemsStateLoaded) {
+      final stateLoaded = (state as FilteredItemsStateLoaded);
+      final tag = stateLoaded.filteredShoppingList.tag;
+      final selected = event.selected;
+      final categoriesOrder = stateLoaded.categoriesOrder;
+      if (itemsBloc.state is ItemsLoaded) {
+        final items = (itemsBloc.state as ItemsLoaded).items;
+        yield FilteredItemsStateLoaded(
+            from(tag, selected, categoriesOrder, items),
+            selected,
+            categoriesOrder);
+      }
     }
   }
 
@@ -64,19 +75,29 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
     final selected = state is FilteredItemsStateLoaded
         ? (state as FilteredItemsStateLoaded).selected
         : false;
+    final categoriesOrder = state is FilteredItemsStateLoaded
+        ? (state as FilteredItemsStateLoaded).categoriesOrder
+        : defaultCategoriesOrder;
     yield FilteredItemsStateLoaded(
-        from(tagNameToFilter, selected, event.items), selected);
+        from(tagNameToFilter, selected, categoriesOrder, event.items),
+        selected,
+        categoriesOrder);
   }
 
-  Stream<FilteredItemsState> _mapFilteredCategoriesUpdatedToState(
-      FilteredCategoriesUpdated event) async* {
+  Stream<FilteredItemsState> _mapCategoriesUpdatedToState(
+      CategoriesUpdated event) async* {
     if (state is FilteredItemsStateLoaded) {
       final stateLoaded = (state as FilteredItemsStateLoaded);
-      final selected = stateLoaded.selected;
       final tag = stateLoaded.filteredShoppingList.tag;
-      final categories = [...event.categories];
-      yield FilteredItemsStateLoaded(
-          FilteredShoppingList(tag, categories), selected);
+      final selected = stateLoaded.selected;
+      final categoriesOrder = event.categories;
+      if (itemsBloc.state is ItemsLoaded) {
+        final items = (itemsBloc.state as ItemsLoaded).items;
+        yield FilteredItemsStateLoaded(
+            from(tag, selected, categoriesOrder, items),
+            selected,
+            categoriesOrder);
+      }
     }
   }
 
@@ -88,15 +109,20 @@ class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
   }
 }
 
-FilteredShoppingList from(String tag, bool selected, List<Item> items) {
+FilteredShoppingList from(
+    String tag, bool selected, List<String> categoriesOrder, List<Item> items) {
   final List<Item> filteredByTag = items
       .where(_filterFrom(tag))
       .where((e) => e.selected == selected)
       .toList();
   final List<Item> sortedByName = filteredByTag
     ..sort((a, b) => a.name.compareTo(b.name));
+  final List<Item> sortedByCategory = sortedByName
+    ..sort((a, b) => categoriesOrder
+        .indexOf(a.category)
+        .compareTo(categoriesOrder.indexOf(b.category)));
   final Map<String, List<Item>> groupedByCategory =
-      groupBy(sortedByName, (Item item) => item.category);
+      groupBy(sortedByCategory, (Item item) => item.category);
   final List<FilteredCategory> filteredCategories = groupedByCategory.entries
       .toList()
       .map((MapEntry<String, List<Item>> entry) =>

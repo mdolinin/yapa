@@ -52,8 +52,10 @@ class CategoryListWidget extends StatelessWidget {
       }
       final category = reorderedCategories.removeAt(oldIndex);
       reorderedCategories.insert(newIndex, category);
+      final categoriesNames =
+          reorderedCategories.map((FilteredCategory fc) => fc.name).toList();
       BlocProvider.of<FilteredItemsBloc>(context).add(
-        FilteredCategoriesUpdated(reorderedCategories),
+        CategoriesUpdated(categoriesNames),
       );
     };
   }

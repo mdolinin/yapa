@@ -5,6 +5,7 @@ import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/repository/category_repository.dart';
 import 'package:yapa/repository/items_repository.dart';
 
 class MockItemsBlock extends MockBloc<ItemsEvent, ItemsState>
@@ -14,6 +15,8 @@ class MockSelectedBlock extends MockBloc<SelectedBloc, SelectedState>
     implements SelectedBloc {}
 
 class MockItemsRepository extends Mock implements ItemsRepository {}
+
+final List<String> defaultOrder = category_names.toList()..insert(0, '');
 
 void main() {
   group('FilteredItemsBloc', () {
@@ -38,7 +41,9 @@ void main() {
       expect: [
         FilteredItemsStateLoading(),
         FilteredItemsStateLoaded(
-            from(null, false, [Item('Crackers', id: '0')]), false),
+            from(null, false, defaultOrder, [Item('Crackers', id: '0')]),
+            false,
+            defaultOrder),
       ],
     );
 
@@ -67,17 +72,29 @@ void main() {
       expect: [
         FilteredItemsStateLoading(),
         FilteredItemsStateLoaded(
-            from(null, false, [Item('Pretzels', id: '1')]), false),
+            from(null, false, defaultOrder, [Item('Pretzels', id: '1')]),
+            false,
+            defaultOrder),
         FilteredItemsStateLoaded(
-            from(null, true, [Item('Pretzels', id: '1')]), true),
+            from(null, true, defaultOrder, [Item('Pretzels', id: '1')]),
+            true,
+            defaultOrder),
       ],
     );
 
     blocTest<FilteredItemsBloc, FilteredItemsEvent, FilteredItemsState>(
-      'should update a list of filtered categories in response to FilteredCategoriesUpdated Event',
+      'should update a list of filtered categories in response to CategoriesUpdated Event',
       build: () {
+        var itemsLoaded =
+            ItemsLoaded([Item('Crackers', id: '0', category: "Cookies")]);
         final itemsBloc = MockItemsBlock();
-        whenListen(itemsBloc, Stream<ItemsState>.fromIterable([]));
+        when(itemsBloc.state).thenAnswer((_) => itemsLoaded);
+        whenListen(
+          itemsBloc,
+          Stream<ItemsState>.fromIterable([
+            itemsLoaded,
+          ]),
+        );
         final selectedBloc = MockSelectedBlock();
         whenListen(selectedBloc, Stream<SelectedState>.fromIterable([]));
         return FilteredItemsBloc(
@@ -85,16 +102,21 @@ void main() {
       },
       act: (FilteredItemsBloc bloc) async {
         bloc
-          ..add(ItemsUpdated([Item('Crackers', id: '0')]))
-          ..add(FilteredCategoriesUpdated(
-              from(null, false, [Item('Pretzels', id: '1')]).categories));
+          ..add(ItemsUpdated([Item('Crackers', id: '0', category: "Cookies")]))
+          ..add(CategoriesUpdated(["Cookies", "Meat"]));
       },
       expect: [
         FilteredItemsStateLoading(),
         FilteredItemsStateLoaded(
-            from(null, false, [Item('Crackers', id: '0')]), false),
+            from(null, false, defaultOrder,
+                [Item('Crackers', id: '0', category: "Cookies")]),
+            false,
+            defaultOrder),
         FilteredItemsStateLoaded(
-            from(null, false, [Item('Pretzels', id: '1')]), false),
+            from(null, false, ["Cookies", "Meat"],
+                [Item('Crackers', id: '0', category: "Cookies")]),
+            false,
+            ["Cookies", "Meat"]),
       ],
     );
   });
