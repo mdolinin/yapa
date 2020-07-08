@@ -1,3 +1,5 @@
+import 'package:yapa/repository/category_entity.dart';
+
 const Set<String> category_names = {
   'Bread and Cookies',
   'Vegetables and Herbs',
@@ -12,3 +14,9 @@ const Set<String> category_names = {
   'Canned Food',
   'Household, Health, other Misc.',
 };
+
+abstract class CategoriesRepository {
+  Future<List<CategoryEntity>> loadCategories();
+
+  Future saveCategories(List<CategoryEntity> categories);
+}
