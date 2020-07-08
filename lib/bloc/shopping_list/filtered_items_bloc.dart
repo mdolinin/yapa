@@ -15,8 +15,7 @@ import './filtered_items.dart';
 typedef ItemFilter = bool Function(Item);
 
 class FilteredItemsBloc extends Bloc<FilteredItemsEvent, FilteredItemsState> {
-  final List<String> defaultCategoriesOrder = category_names.toList()
-    ..insert(0, '');
+  final List<String> defaultCategoriesOrder = category_names.toList();
   final String tagNameToFilter;
   final ItemsBloc itemsBloc;
   final SelectedBloc selectedBloc;

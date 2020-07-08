@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:yapa/bloc/categories/categories.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
-import 'package:yapa/repository/category_repository.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -104,21 +106,36 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     .toList(),
               ),
               Divider(),
-              Wrap(
-                alignment: WrapAlignment.spaceAround,
-                children: category_names
-                    .map(
-                      (name) => ChoiceChip(
-                        label: Text('$name'),
-                        selected: _item.category == name,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            _item = _item.copyWith(category: name);
-                          });
-                        },
-                      ),
-                    )
-                    .toList(),
+              BlocBuilder<CategoriesBloc, CategoriesState>(
+                builder: (context, state) {
+                  if (state is CategoriesLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is CategoriesLoaded) {
+                    final categoryNames =
+                        state.categories.map((Category c) => c.name).toList();
+                    return Wrap(
+                      alignment: WrapAlignment.spaceAround,
+                      children: categoryNames
+                          .where((n) => n != '')
+                          .map(
+                            (name) => ChoiceChip(
+                              label: Text('$name'),
+                              selected: _item.category == name,
+                              onSelected: (bool selected) {
+                                setState(() {
+                                  _item = _item.copyWith(category: name);
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
               ),
               Divider(),
               SwitchListTile(

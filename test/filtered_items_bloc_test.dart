@@ -16,7 +16,7 @@ class MockSelectedBlock extends MockBloc<SelectedBloc, SelectedState>
 
 class MockItemsRepository extends Mock implements ItemsRepository {}
 
-final List<String> defaultOrder = category_names.toList()..insert(0, '');
+final List<String> defaultOrder = category_names.toList();
 
 void main() {
   group('FilteredItemsBloc', () {

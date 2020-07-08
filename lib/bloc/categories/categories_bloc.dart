@@ -10,7 +10,9 @@ import 'categories.dart';
 class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   final CategoriesRepository categoriesRepository;
 
-  CategoriesBloc({@required this.categoriesRepository});
+  CategoriesBloc({@required this.categoriesRepository}) {
+    categoriesRepository.loadDefaultCategories();
+  }
 
   @override
   CategoriesState get initialState => CategoriesLoading();
