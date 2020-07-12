@@ -39,14 +39,6 @@ class ShoppingItemsTreeBloc
 
   Stream<ShoppingItemsTreeState> _mapItemsUpdatedToState(
       ItemsUpdated event) async* {
-    final Map<String, List<CategorizedItems>> defaultTaggedCategorizedItems =
-        {};
-    defaultTaggedCategorizedItems[null] = defaultCategoriesOrder
-        .map((name) => CategorizedItems(name, []))
-        .toList();
-    defaultTaggedCategorizedItems[''] = defaultCategoriesOrder
-        .map((name) => CategorizedItems(name, []))
-        .toList();
     Map<String, List<CategorizedItems>> taggedCategorizedItems;
     if (state is ShoppingItemsTreeLoaded) {
       // Clean up old state from items
@@ -62,7 +54,7 @@ class ShoppingItemsTreeBloc
       });
       taggedCategorizedItems = newState;
     } else {
-      taggedCategorizedItems = defaultTaggedCategorizedItems;
+      taggedCategorizedItems = buildDefaultShoppingItemsTree();
     }
 
     final items = event.items;
@@ -86,6 +78,18 @@ class ShoppingItemsTreeBloc
       }
     }
     yield ShoppingItemsTreeLoaded(taggedCategorizedItems);
+  }
+
+  Map<String, List<CategorizedItems>> buildDefaultShoppingItemsTree() {
+    final Map<String, List<CategorizedItems>> defaultTaggedCategorizedItems =
+        {};
+    defaultTaggedCategorizedItems[null] = defaultCategoriesOrder
+        .map((name) => CategorizedItems(name, []))
+        .toList();
+    defaultTaggedCategorizedItems[''] = defaultCategoriesOrder
+        .map((name) => CategorizedItems(name, []))
+        .toList();
+    return defaultTaggedCategorizedItems;
   }
 
   void categorizeItem(List<CategorizedItems> categorizedItemsList, Item item) {
