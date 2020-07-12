@@ -1,33 +1,33 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
+import 'package:yapa/bloc/shopping_list/shopping_items_tree.dart';
 import 'package:yapa/models/item.dart';
-import 'package:yapa/repository/category_repository.dart';
-import 'package:yapa/repository/items_repository.dart';
+import 'package:yapa/models/tagged_categorized_items.dart';
 
-class MockItemsBlock extends MockBloc<ItemsEvent, ItemsState>
-    implements ItemsBloc {}
+class MockShoppingItemsTreeBloc
+    extends MockBloc<ShoppingItemsTreeEvent, ShoppingItemsTreeState>
+    implements ShoppingItemsTreeBloc {}
 
 class MockSelectedBlock extends MockBloc<SelectedBloc, SelectedState>
     implements SelectedBloc {}
 
-class MockItemsRepository extends Mock implements ItemsRepository {}
-
-final List<String> defaultOrder = category_names.toList();
-
 void main() {
   group('FilteredItemsBloc', () {
     blocTest<FilteredItemsBloc, FilteredItemsEvent, FilteredItemsState>(
-      'adds ItemsUpdated when ItemsBloc.state emits ItemsLoaded',
+      'adds CategoriesOrItemsUpdated when ShoppingItemsTreeBloc.state emits ShoppingItemsTreeLoaded',
       build: () {
-        final itemsBloc = MockItemsBlock();
+        final shoppingItemsTreeBloc = MockShoppingItemsTreeBloc();
         whenListen(
-          itemsBloc,
-          Stream<ItemsState>.fromIterable([
-            ItemsLoaded([Item('Crackers', id: '0')]),
+          shoppingItemsTreeBloc,
+          Stream<ShoppingItemsTreeLoaded>.fromIterable([
+            ShoppingItemsTreeLoaded({
+              "": [
+                CategorizedItems("", [Item('Crackers', id: '0')])
+              ]
+            }),
           ]),
         );
         final selectedBloc = MockSelectedBlock();
@@ -36,26 +36,31 @@ void main() {
           Stream<SelectedState>.fromIterable([InitialSelectedState()]),
         );
         return FilteredItemsBloc(
-            itemsBloc: itemsBloc, selectedBloc: selectedBloc);
+            tagNameToFilter: "",
+            shoppingItemsTreeBloc: shoppingItemsTreeBloc,
+            selectedBloc: selectedBloc);
       },
       expect: [
         FilteredItemsStateLoading(),
-        FilteredItemsStateLoaded(
-            from(null, false, defaultOrder, [Item('Crackers', id: '0')]),
-            false,
-            defaultOrder),
+        FilteredItemsStateLoaded("", false, [
+          CategorizedItems("", [Item('Crackers', id: '0')])
+        ]),
       ],
     );
 
     blocTest<FilteredItemsBloc, FilteredItemsEvent, FilteredItemsState>(
       'adds FilterUpdated when SelectedBloc.state emits InitialSelectedState',
       build: () {
-        var itemsLoaded = ItemsLoaded([Item('Pretzels', id: '1')]);
-        final itemsBloc = MockItemsBlock();
-        when(itemsBloc.state).thenAnswer((_) => itemsLoaded);
+        var itemsLoaded = ShoppingItemsTreeLoaded({
+          "": [
+            CategorizedItems("", [Item('Pretzels', id: '1')])
+          ]
+        });
+        final shoppingItemsTreeBloc = MockShoppingItemsTreeBloc();
+        when(shoppingItemsTreeBloc.state).thenAnswer((_) => itemsLoaded);
         whenListen(
-          itemsBloc,
-          Stream<ItemsState>.fromIterable([
+          shoppingItemsTreeBloc,
+          Stream<ShoppingItemsTreeState>.fromIterable([
             itemsLoaded,
           ]),
         );
@@ -67,56 +72,16 @@ void main() {
           ]),
         );
         return FilteredItemsBloc(
-            itemsBloc: itemsBloc, selectedBloc: selectedBloc);
+            tagNameToFilter: "",
+            shoppingItemsTreeBloc: shoppingItemsTreeBloc,
+            selectedBloc: selectedBloc);
       },
       expect: [
         FilteredItemsStateLoading(),
-        FilteredItemsStateLoaded(
-            from(null, false, defaultOrder, [Item('Pretzels', id: '1')]),
-            false,
-            defaultOrder),
-        FilteredItemsStateLoaded(
-            from(null, true, defaultOrder, [Item('Pretzels', id: '1')]),
-            true,
-            defaultOrder),
-      ],
-    );
-
-    blocTest<FilteredItemsBloc, FilteredItemsEvent, FilteredItemsState>(
-      'should update a list of filtered categories in response to CategoriesUpdated Event',
-      build: () {
-        var itemsLoaded =
-            ItemsLoaded([Item('Crackers', id: '0', category: "Cookies")]);
-        final itemsBloc = MockItemsBlock();
-        when(itemsBloc.state).thenAnswer((_) => itemsLoaded);
-        whenListen(
-          itemsBloc,
-          Stream<ItemsState>.fromIterable([
-            itemsLoaded,
-          ]),
-        );
-        final selectedBloc = MockSelectedBlock();
-        whenListen(selectedBloc, Stream<SelectedState>.fromIterable([]));
-        return FilteredItemsBloc(
-            itemsBloc: itemsBloc, selectedBloc: selectedBloc);
-      },
-      act: (FilteredItemsBloc bloc) async {
-        bloc
-          ..add(ItemsUpdated([Item('Crackers', id: '0', category: "Cookies")]))
-          ..add(CategoriesUpdated(["Cookies", "Meat"]));
-      },
-      expect: [
-        FilteredItemsStateLoading(),
-        FilteredItemsStateLoaded(
-            from(null, false, defaultOrder,
-                [Item('Crackers', id: '0', category: "Cookies")]),
-            false,
-            defaultOrder),
-        FilteredItemsStateLoaded(
-            from(null, false, ["Cookies", "Meat"],
-                [Item('Crackers', id: '0', category: "Cookies")]),
-            false,
-            ["Cookies", "Meat"]),
+        FilteredItemsStateLoaded("", false, [
+          CategorizedItems("", [Item('Pretzels', id: '1')])
+        ]),
+        FilteredItemsStateLoaded("", true, [CategorizedItems("", [])]),
       ],
     );
   });

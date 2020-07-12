@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:yapa/models/filtered_shopping_list.dart';
+import 'package:yapa/models/tagged_categorized_items.dart';
 
 abstract class FilteredItemsState extends Equatable {
   const FilteredItemsState();
@@ -11,15 +11,14 @@ abstract class FilteredItemsState extends Equatable {
 class FilteredItemsStateLoading extends FilteredItemsState {}
 
 class FilteredItemsStateLoaded extends FilteredItemsState {
-  final FilteredShoppingList filteredShoppingList;
+  final String tag;
   final bool selected;
-  final List<String> categoriesOrder;
+  final List<CategorizedItems> categorizedItems;
 
-  FilteredItemsStateLoaded(
-      this.filteredShoppingList, this.selected, this.categoriesOrder);
+  FilteredItemsStateLoaded(this.tag, this.selected, this.categorizedItems);
 
   @override
-  List<Object> get props => [filteredShoppingList, selected, categoriesOrder];
+  List<Object> get props => [tag, selected, categorizedItems];
 
   @override
   bool get stringify => true;

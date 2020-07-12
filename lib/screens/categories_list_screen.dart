@@ -1,10 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:yapa/bloc/items/items_bloc.dart';
-import 'package:yapa/bloc/shopping_list/filtered_items.dart';
-import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
-import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/widgets/app_drawer.dart';
 import 'package:yapa/widgets/category_list_widget.dart';
@@ -58,23 +53,12 @@ class _CategoriesListScreenState extends State<CategoriesListScreen>
         },
         body: TabBarView(
           children:
-              store_names.map((name) => buildCategoryListWidget(name)).toList()
-                ..insert(0, buildCategoryListWidget(''))
-                ..insert(0, buildCategoryListWidget(null)),
+              store_names.map((name) => CategoryListWidget(tag: name)).toList()
+                ..insert(0, CategoryListWidget(tag: ''))
+                ..insert(0, CategoryListWidget(tag: null)),
           controller: _tabController,
         ),
       ),
     );
-  }
-
-  Widget buildCategoryListWidget(String tagNameToFilter) {
-    return BlocProvider(
-        create: (BuildContext context) {
-          return FilteredItemsBloc(
-              tagNameToFilter: tagNameToFilter,
-              itemsBloc: BlocProvider.of<ItemsBloc>(context),
-              selectedBloc: BlocProvider.of<SelectedBloc>(context));
-        },
-        child: CategoryListWidget());
   }
 }

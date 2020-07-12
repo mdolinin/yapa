@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:yapa/bloc/items/items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
+import 'package:yapa/bloc/shopping_list/shopping_items_tree_bloc.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/routes.dart';
 import 'package:yapa/widgets/app_drawer.dart';
@@ -115,7 +115,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
         create: (BuildContext context) {
           return FilteredItemsBloc(
               tagNameToFilter: tagNameToFilter,
-              itemsBloc: BlocProvider.of<ItemsBloc>(context),
+              shoppingItemsTreeBloc:
+                  BlocProvider.of<ShoppingItemsTreeBloc>(context),
               selectedBloc: BlocProvider.of<SelectedBloc>(context));
         },
         child: ShoppingListWidget());

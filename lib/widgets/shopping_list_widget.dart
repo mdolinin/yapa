@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
-import 'package:yapa/models/filtered_shopping_list.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/models/tagged_categorized_items.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
 import 'package:yapa/widgets/category_title_widget.dart';
@@ -19,26 +19,27 @@ class ShoppingListWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (state is FilteredItemsStateLoaded) {
-          final FilteredShoppingList filteredShoppingList =
-              state.filteredShoppingList;
+          final String tag = state.tag;
+          final List<CategorizedItems> categorizedItemsList =
+              state.categorizedItems;
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 600),
             switchInCurve: Curves.easeInOut,
             switchOutCurve: Curves.linear,
             child: ListView(
-              key: ValueKey<String>(
-                  "${filteredShoppingList.tag}__${state.selected}"),
-              children: filteredShoppingList.categories.map((category) {
+              key: ValueKey<String>("${tag}__${state.selected}"),
+              children: categorizedItemsList
+                  .where((e) => e.items.isNotEmpty)
+                  .map((ci) {
                 return ExpansionTile(
                   title: CategoryTitleWidget(
-                    name: category.name,
-                    itemCount: category.items.length,
+                    name: ci.category,
+                    itemCount: ci.items.length,
                   ),
-                  leading: category.name == '' ? Icon(Icons.category) : null,
-                  key: PageStorageKey<String>(
-                      "${filteredShoppingList.tag}__${category.name}"),
+                  leading: ci.category == '' ? Icon(Icons.category) : null,
+                  key: PageStorageKey<String>("${tag}__${ci.category}"),
                   initiallyExpanded: true,
-                  children: category.items
+                  children: ci.items
                       .map((item) => ItemTileWidget(
                           item: item,
                           onSelect: _toggleItemSelection(context),

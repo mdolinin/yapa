@@ -3,17 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yapa/bloc/items/items_bloc.dart';
 import 'package:yapa/bloc/items/items_event.dart';
+import 'package:yapa/bloc/shopping_list/shopping_items_tree_bloc.dart';
 import 'package:yapa/main.dart';
 import 'package:yapa/repository/mock_items_repository.dart';
 
 void main() {
   testWidgets('Yapa smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(BlocProvider(
-      create: (context) =>
-          ItemsBloc(itemsRepository: MockItemsRepository())..add(LoadItems()),
-      child: YapaApp(),
-    ));
+    await tester.pumpWidget(
+      BlocProvider(
+        create: (context) =>
+            ItemsBloc(itemsRepository: MockItemsRepository())..add(LoadItems()),
+        child: BlocProvider(
+          create: (BuildContext context) => ShoppingItemsTreeBloc(
+              itemsBloc: BlocProvider.of<ItemsBloc>(context)),
+          child: YapaApp(),
+        ),
+      ),
+    );
 
     // Verify that our app shows Shopping list.
     expect(find.text('Shopping list'), findsOneWidget);

@@ -20,6 +20,7 @@ import 'package:yapa/screens/shopping_list_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
 import 'bloc/shopping_list/selected.dart';
+import 'bloc/shopping_list/shopping_items_tree.dart';
 
 void main() async {
   BlocSupervisor.delegate = LoggingBlocDelegate();
@@ -41,7 +42,11 @@ void main() async {
               categoriesRepository: HiveCategoriesRepository(categoriesBox))
             ..add(LoadCategories())),
     ],
-    child: YapaApp(),
+    child: BlocProvider(
+      create: (BuildContext context) =>
+          ShoppingItemsTreeBloc(itemsBloc: BlocProvider.of<ItemsBloc>(context)),
+      child: YapaApp(),
+    ),
   ));
 }
 
@@ -63,9 +68,7 @@ class YapaApp extends StatelessWidget {
               },
               isEditing: false,
             ),
-        Routes.categories: (context) => BlocProvider(
-            create: (BuildContext context) => SelectedBloc(),
-            child: CategoriesListScreen()),
+        Routes.categories: (context) => CategoriesListScreen(),
       },
     );
   }

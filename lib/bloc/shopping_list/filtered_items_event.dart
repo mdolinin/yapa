@@ -1,20 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:yapa/models/item.dart';
+import 'package:yapa/models/tagged_categorized_items.dart';
 
 abstract class FilteredItemsEvent extends Equatable {
   const FilteredItemsEvent();
-}
-
-class ItemsUpdated extends FilteredItemsEvent {
-  final List<Item> items;
-
-  const ItemsUpdated(this.items);
-
-  @override
-  List<Object> get props => [items];
-
-  @override
-  bool get stringify => true;
 }
 
 class FilterUpdated extends FilteredItemsEvent {
@@ -29,13 +17,13 @@ class FilterUpdated extends FilteredItemsEvent {
   bool get stringify => true;
 }
 
-class CategoriesUpdated extends FilteredItemsEvent {
-  final List<String> categories;
+class CategoriesOrItemsUpdated extends FilteredItemsEvent {
+  final List<CategorizedItems> categorizedItems;
 
-  const CategoriesUpdated(this.categories);
+  const CategoriesOrItemsUpdated(this.categorizedItems);
 
   @override
-  List<Object> get props => [categories];
+  List<Object> get props => [categorizedItems];
 
   @override
   bool get stringify => true;
