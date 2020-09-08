@@ -10,6 +10,8 @@ class Item extends Equatable {
   final String pathToImage;
   final List<String> tags;
   final String category;
+  final double priceOfBaseUnit;
+  final double quantityInBaseUnits;
 
   Item(
     this.name, {
@@ -19,10 +21,14 @@ class Item extends Equatable {
     List<String> tags = const [],
     String category = '',
     String id,
+    double priceOfBaseUnit,
+    double quantityInBaseUnits,
   })  : this.volume = volume ?? '',
         this.pathToImage = pathToImage ?? '',
         this.tags = tags ?? [],
         this.category = category ?? '',
+        this.priceOfBaseUnit = priceOfBaseUnit ?? 0.0,
+        this.quantityInBaseUnits = quantityInBaseUnits ?? 0.0,
         this.id = id ?? Uuid().v4();
 
   Item copyWith(
@@ -32,6 +38,8 @@ class Item extends Equatable {
       String name,
       String pathToImage,
       List<String> tags,
+      double priceOfBaseUnit,
+      double quantityInBaseUnits,
       String category}) {
     return Item(
       name ?? this.name,
@@ -40,17 +48,28 @@ class Item extends Equatable {
       volume: volume ?? this.volume,
       pathToImage: pathToImage ?? this.pathToImage,
       tags: tags ?? this.tags,
+      priceOfBaseUnit: priceOfBaseUnit ?? this.priceOfBaseUnit,
+      quantityInBaseUnits: quantityInBaseUnits ?? this.quantityInBaseUnits,
       category: category ?? this.category,
     );
   }
 
   @override
-  List<Object> get props =>
-      [selected, id, volume, name, pathToImage, tags, category];
+  List<Object> get props => [
+        selected,
+        id,
+        volume,
+        name,
+        pathToImage,
+        tags,
+        priceOfBaseUnit,
+        quantityInBaseUnits,
+        category
+      ];
 
   @override
   String toString() {
-    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, category: $category }';
+    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category }';
   }
 
   ItemEntity toEntity() {

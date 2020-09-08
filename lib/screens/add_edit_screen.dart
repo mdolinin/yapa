@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -82,29 +84,117 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   },
                 ),
                 Divider(),
-                Wrap(
-                  alignment: WrapAlignment.spaceAround,
-                  children: store_names
-                      .map(
-                        (name) => FilterChip(
-                          label: Text('$name'),
-                          checkmarkColor: Theme.of(context).canvasColor,
-                          selectedColor: Theme.of(context).accentColor,
-                          selected: _item.tags.contains('$name'),
-                          onSelected: (bool value) {
-                            List<String> tags = List.from(_item.tags);
-                            if (value) {
-                              tags..add('$name');
-                            } else {
-                              tags..remove('$name');
-                            }
-                            setState(() {
-                              _item = _item.copyWith(tags: tags);
-                            });
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      flex: 6,
+                      child: InputChip(
+                        label: _item.tags.isEmpty
+                            ? Text("Select store")
+                            : Text('${_item.tags.first}'),
+                        selected: _item.tags.isNotEmpty,
+                        checkmarkColor: Theme.of(context).canvasColor,
+                        selectedColor: Theme.of(context).accentColor,
+                        onPressed: () {
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SimpleDialog(
+                                title: Center(child: Text('Select store')),
+                                children: store_names
+                                    .map(
+                                      (name) => FilterChip(
+                                        label: Text('$name'),
+                                        checkmarkColor:
+                                            Theme.of(context).canvasColor,
+                                        selectedColor:
+                                            Theme.of(context).accentColor,
+                                        selected: _item.tags.contains('$name'),
+                                        onSelected: (bool value) {
+                                          List<String> tags =
+                                              List.from(_item.tags);
+                                          if (value) {
+                                            tags = ['$name'];
+                                          }
+                                          setState(() {
+                                            _item = _item.copyWith(tags: tags);
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    Flexible(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                        child: TextFormField(
+                          initialValue: _item.quantityInBaseUnits == 0.0
+                              ? null
+                              : _item.quantityInBaseUnits.toString(),
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: <TextInputFormatter>[
+                            TextInputFormatter.withFunction(
+                                (oldValue, newValue) =>
+                                    RegExp(r'(^\d*\.?\d{0,2})$')
+                                            .hasMatch(newValue.text)
+                                        ? newValue
+                                        : oldValue)
+                          ],
+                          decoration: InputDecoration(
+                            labelText: 'Quantity',
+                            alignLabelWithHint: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: textTheme.headline6,
+                          onSaved: (value) {
+                            _item = _item.copyWith(
+                                quantityInBaseUnits: double.parse(value));
                           },
                         ),
-                      )
-                      .toList(),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                        child: TextFormField(
+                          initialValue: _item.priceOfBaseUnit == 0.0
+                              ? null
+                              : _item.priceOfBaseUnit.toString(),
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: <TextInputFormatter>[
+                            TextInputFormatter.withFunction(
+                                (oldValue, newValue) =>
+                                    RegExp(r'(^\d*\.?\d{0,2})$')
+                                            .hasMatch(newValue.text)
+                                        ? newValue
+                                        : oldValue)
+                          ],
+                          decoration: InputDecoration(
+                            labelText: 'Price',
+                            alignLabelWithHint: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: textTheme.headline6,
+                          onSaved: (value) {
+                            _item = _item.copyWith(
+                                priceOfBaseUnit: double.parse(value));
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Divider(),
                 BlocBuilder<CategoriesBloc, CategoriesState>(
