@@ -48,6 +48,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool showFAB = MediaQuery.of(context).viewInsets.bottom == 0.0;
     final textTheme = Theme.of(context).textTheme;
     _item = _item ?? (isEditing ? widget.item : Item(''));
     _selectedStores = _selectedStores..addAll(_item.tags);
@@ -244,16 +245,18 @@ class _AddEditScreenState extends State<AddEditScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            _formKey.currentState.save();
-            widget.onSave(_item);
-            Navigator.pop(context);
-          }
-        },
-        child: Icon(isEditing ? Icons.check : Icons.add),
-      ),
+      floatingActionButton: showFAB
+          ? FloatingActionButton(
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  widget.onSave(_item);
+                  Navigator.pop(context);
+                }
+              },
+              child: Icon(isEditing ? Icons.check : Icons.add),
+            )
+          : null,
     );
   }
 }
