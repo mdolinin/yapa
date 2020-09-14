@@ -12,6 +12,7 @@ class Item extends Equatable {
   final String category;
   final double priceOfBaseUnit;
   final double quantityInBaseUnits;
+  final List<Item> similarItems;
 
   Item(
     this.name, {
@@ -23,12 +24,14 @@ class Item extends Equatable {
     String id,
     double priceOfBaseUnit,
     double quantityInBaseUnits,
+    List<Item> similarItems = const [],
   })  : this.volume = volume ?? '',
         this.pathToImage = pathToImage ?? '',
         this.tags = tags ?? [],
         this.category = category ?? '',
         this.priceOfBaseUnit = priceOfBaseUnit ?? 0.0,
         this.quantityInBaseUnits = quantityInBaseUnits ?? 0.0,
+        this.similarItems = similarItems ?? [],
         this.id = id ?? Uuid().v4();
 
   Item copyWith(
@@ -40,6 +43,7 @@ class Item extends Equatable {
       List<String> tags,
       double priceOfBaseUnit,
       double quantityInBaseUnits,
+      List<Item> similarItems,
       String category}) {
     return Item(
       name ?? this.name,
@@ -50,6 +54,7 @@ class Item extends Equatable {
       tags: tags ?? this.tags,
       priceOfBaseUnit: priceOfBaseUnit ?? this.priceOfBaseUnit,
       quantityInBaseUnits: quantityInBaseUnits ?? this.quantityInBaseUnits,
+      similarItems: similarItems ?? this.similarItems,
       category: category ?? this.category,
     );
   }
@@ -64,12 +69,13 @@ class Item extends Equatable {
         tags,
         priceOfBaseUnit,
         quantityInBaseUnits,
+        similarItems,
         category
       ];
 
   @override
   String toString() {
-    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category }';
+    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category , similarItems: $similarItems }';
   }
 
   ItemEntity toEntity() {

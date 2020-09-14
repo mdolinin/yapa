@@ -31,6 +31,7 @@ class AddEditScreen extends StatefulWidget {
 class _AddEditScreenState extends State<AddEditScreen> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Item _item;
+  Set<String> _selectedStores = Set();
 
   bool get isEditing => widget.isEditing;
 
@@ -49,6 +50,10 @@ class _AddEditScreenState extends State<AddEditScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     _item = _item ?? (isEditing ? widget.item : Item(''));
+    _selectedStores = _selectedStores..addAll(_item.tags);
+    _item.similarItems.forEach((store) {
+      _selectedStores = _selectedStores..addAll(store.tags);
+    });
     return Scaffold(
       appBar: AppBar(
         title: isEditing ? Text('Edit item') : Text('Add item'),
@@ -84,118 +89,91 @@ class _AddEditScreenState extends State<AddEditScreen> {
                   },
                 ),
                 Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Flexible(
-                      flex: 6,
-                      child: InputChip(
-                        label: _item.tags.isEmpty
-                            ? Text("Select store")
-                            : Text('${_item.tags.first}'),
-                        selected: _item.tags.isNotEmpty,
-                        checkmarkColor: Theme.of(context).canvasColor,
-                        selectedColor: Theme.of(context).accentColor,
-                        onPressed: () {
-                          showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SimpleDialog(
-                                title: Center(child: Text('Select store')),
-                                children: store_names
-                                    .map(
-                                      (name) => FilterChip(
-                                        label: Text('$name'),
-                                        checkmarkColor:
-                                            Theme.of(context).canvasColor,
-                                        selectedColor:
-                                            Theme.of(context).accentColor,
-                                        selected: _item.tags.contains('$name'),
-                                        onSelected: (bool value) {
-                                          List<String> tags =
-                                              List.from(_item.tags);
-                                          if (value) {
-                                            tags = ['$name'];
-                                          }
-                                          setState(() {
-                                            _item = _item.copyWith(tags: tags);
-                                          });
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    Flexible(
-                      flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                        child: TextFormField(
-                          initialValue: _item.quantityInBaseUnits == 0.0
-                              ? null
-                              : _item.quantityInBaseUnits.toString(),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: <TextInputFormatter>[
-                            TextInputFormatter.withFunction(
-                                (oldValue, newValue) =>
-                                    RegExp(r'(^\d*\.?\d{0,2})$')
-                                            .hasMatch(newValue.text)
-                                        ? newValue
-                                        : oldValue)
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Quantity',
-                            alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          style: textTheme.headline6,
-                          onSaved: (value) {
-                            _item = _item.copyWith(
-                                quantityInBaseUnits: double.parse(value));
-                          },
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                        child: TextFormField(
-                          initialValue: _item.priceOfBaseUnit == 0.0
-                              ? null
-                              : _item.priceOfBaseUnit.toString(),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: <TextInputFormatter>[
-                            TextInputFormatter.withFunction(
-                                (oldValue, newValue) =>
-                                    RegExp(r'(^\d*\.?\d{0,2})$')
-                                            .hasMatch(newValue.text)
-                                        ? newValue
-                                        : oldValue)
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Price',
-                            alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          style: textTheme.headline6,
-                          onSaved: (value) {
-                            _item = _item.copyWith(
-                                priceOfBaseUnit: double.parse(value));
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+                SelectStoreRow(
+                  item: _item,
+                  selectedStores: _selectedStores,
+                  onStoreSelected: (List<String> tags) {
+                    setState(() {
+                      _selectedStores = _selectedStores..addAll(tags);
+                      _item = _item.copyWith(tags: tags);
+                    });
+                  },
+                  onQtySaved: (double qty) {
+                    setState(() {
+                      _item = _item.copyWith(quantityInBaseUnits: qty);
+                    });
+                  },
+                  onPriceSaved: (double price) {
+                    setState(() {
+                      _item = _item.copyWith(priceOfBaseUnit: price);
+                    });
+                  },
                 ),
+                Divider(),
+                Column(
+                  children: _item.similarItems.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    Item val = entry.value;
+                    return SelectStoreRow(
+                      item: val,
+                      selectedStores: _selectedStores,
+                      onStoreSelected: (List<String> tags) {
+                        setState(() {
+                          _selectedStores = _selectedStores..addAll(tags);
+                          _item.similarItems[idx] =
+                              _item.similarItems[idx].copyWith(tags: tags);
+                        });
+                      },
+                      onQtySaved: (double qty) {
+                        setState(() {
+                          _item.similarItems[idx] = _item.similarItems[idx]
+                              .copyWith(quantityInBaseUnits: qty);
+                        });
+                      },
+                      onPriceSaved: (double price) {
+                        setState(() {
+                          _item.similarItems[idx] = _item.similarItems[idx]
+                              .copyWith(priceOfBaseUnit: price);
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                Divider(),
+                _selectedStores.length >= store_names.length
+                    ? Row()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          RaisedButton.icon(
+                            color: Theme.of(context).accentColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            icon: Icon(
+                              Icons.plus_one,
+                            ),
+                            textColor: Colors.white,
+                            label: Text(
+                              'Store',
+                              style: textTheme.subtitle1
+                                  .copyWith(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                List<Item> items =
+                                    List.from(_item.similarItems);
+                                items.add(Item(
+                                  _item.name,
+                                  category: _item.category,
+                                  pathToImage: _item.pathToImage,
+                                ));
+                                _item = _item.copyWith(similarItems: items);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                 Divider(),
                 BlocBuilder<CategoriesBloc, CategoriesState>(
                   builder: (context, state) {
@@ -270,6 +248,134 @@ class _AddEditScreenState extends State<AddEditScreen> {
         },
         child: Icon(isEditing ? Icons.check : Icons.add),
       ),
+    );
+  }
+}
+
+class SelectStoreRow extends StatelessWidget {
+  final Item item;
+  final Set<String> selectedStores;
+  final Function onStoreSelected;
+  final Function onQtySaved;
+  final Function onPriceSaved;
+
+  const SelectStoreRow(
+      {@required this.item,
+      @required this.selectedStores,
+      @required this.onStoreSelected,
+      @required this.onQtySaved,
+      @required this.onPriceSaved});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Flexible(
+          flex: 6,
+          child: InputChip(
+            label: item.tags.isEmpty
+                ? Text("Select store")
+                : Text('${item.tags.first}'),
+            selected: item.tags.isNotEmpty,
+            checkmarkColor: Theme.of(context).canvasColor,
+            selectedColor: Theme.of(context).accentColor,
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              showDialog<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Center(child: Text('Select store')),
+                    children: store_names
+                        .where((element) => !selectedStores.contains(element))
+                        .map(
+                          (name) => FilterChip(
+                            label: Text('$name'),
+                            checkmarkColor: Theme.of(context).canvasColor,
+                            selectedColor: Theme.of(context).accentColor,
+                            selected: item.tags.contains('$name'),
+                            onSelected: (bool value) {
+                              List<String> tags = List.from(item.tags);
+                              if (value) {
+                                tags = ['$name'];
+                              }
+                              onStoreSelected(tags);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        Flexible(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+            child: TextFormField(
+              autofocus: false,
+              initialValue: item.quantityInBaseUnits == 0.0
+                  ? null
+                  : item.quantityInBaseUnits.toString(),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: <TextInputFormatter>[
+                TextInputFormatter.withFunction((oldValue, newValue) =>
+                    RegExp(r'(^\d*\.?\d{0,2})$').hasMatch(newValue.text)
+                        ? newValue
+                        : oldValue)
+              ],
+              decoration: InputDecoration(
+                labelText: 'Quantity',
+                alignLabelWithHint: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: textTheme.headline6,
+              onSaved: (value) {
+                double qty = double.tryParse(value) ?? 0.0;
+                if (qty != 0.0) {
+                  onQtySaved(qty);
+                }
+              },
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+            child: TextFormField(
+              initialValue: item.priceOfBaseUnit == 0.0
+                  ? null
+                  : item.priceOfBaseUnit.toString(),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: <TextInputFormatter>[
+                TextInputFormatter.withFunction((oldValue, newValue) =>
+                    RegExp(r'(^\d*\.?\d{0,2})$').hasMatch(newValue.text)
+                        ? newValue
+                        : oldValue)
+              ],
+              decoration: InputDecoration(
+                labelText: 'Price',
+                alignLabelWithHint: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: textTheme.headline6,
+              onSaved: (value) {
+                double price = double.tryParse(value) ?? 0.0;
+                if (price != 0.0) {
+                  onPriceSaved(price);
+                }
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
