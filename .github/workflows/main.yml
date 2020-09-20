@@ -2,8 +2,8 @@ on: push
 name: Build and Test
 
 env:
-  flutter_channel: 'dev'
-  flutter_version: '1.20.0-0.0.pre'
+  flutter_channel: 'stable'
+  flutter_version: '1.20.4'
 
 jobs:
   build:
