@@ -8,13 +8,13 @@ part of 'category_entity.dart';
 
 class CategoryEntityAdapter extends TypeAdapter<CategoryEntity> {
   @override
-  final typeId = 1;
+  final int typeId = 1;
 
   @override
   CategoryEntity read(BinaryReader reader) {
-    var numOfFields = reader.readByte();
-    var fields = <int, dynamic>{
-      for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return CategoryEntity(
       fields[1] as String,
@@ -31,4 +31,14 @@ class CategoryEntityAdapter extends TypeAdapter<CategoryEntity> {
       ..writeByte(1)
       ..write(obj.name);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CategoryEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

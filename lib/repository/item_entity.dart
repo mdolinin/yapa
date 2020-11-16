@@ -18,9 +18,24 @@ class ItemEntity {
   final List<String> tags;
   @HiveField(6)
   final String category;
+  @HiveField(7)
+  final double priceOfBaseUnit;
+  @HiveField(8)
+  final double quantityInBaseUnits;
+  @HiveField(9)
+  final List<String> similarItemIds;
 
-  ItemEntity(this.name, this.id, this.volume, this.selected, this.pathToImage,
-      this.tags, this.category);
+  ItemEntity(
+      this.name,
+      this.id,
+      this.volume,
+      this.selected,
+      this.pathToImage,
+      this.tags,
+      this.category,
+      this.priceOfBaseUnit,
+      this.quantityInBaseUnits,
+      this.similarItemIds);
 
   @override
   int get hashCode =>
@@ -30,7 +45,10 @@ class ItemEntity {
       id.hashCode ^
       pathToImage.hashCode ^
       tags.hashCode ^
-      category.hashCode;
+      category.hashCode ^
+      priceOfBaseUnit.hashCode ^
+      quantityInBaseUnits.hashCode ^
+      similarItemIds.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -43,6 +61,9 @@ class ItemEntity {
           pathToImage == other.pathToImage &&
           tags == other.tags &&
           category == other.category &&
+          priceOfBaseUnit == other.priceOfBaseUnit &&
+          quantityInBaseUnits == other.quantityInBaseUnits &&
+          similarItemIds == other.similarItemIds &&
           id == other.id;
 
   Map<String, Object> toJson() {
@@ -54,12 +75,15 @@ class ItemEntity {
       'pathToImage': pathToImage,
       'tags': tags,
       'category': category,
+      'priceOfBaseUnit': priceOfBaseUnit,
+      'quantityInBaseUnits': quantityInBaseUnits,
+      'similarItemIds': similarItemIds,
     };
   }
 
   @override
   String toString() {
-    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage, tags: $tags, category: $category}';
+    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage, tags: $tags, category: $category, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, similarItemIds: $similarItemIds}';
   }
 
   static ItemEntity fromJson(Map<String, Object> json) {
@@ -71,6 +95,9 @@ class ItemEntity {
       json['pathToImage'] as String,
       json['tags'] as List<String>,
       json['category'] as String,
+      json['priceOfBaseUnit'] as double,
+      json['quantityInBaseUnits'] as double,
+      json['similarItemIds'] as List<String>,
     );
   }
 }

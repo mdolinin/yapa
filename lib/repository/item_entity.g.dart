@@ -8,13 +8,13 @@ part of 'item_entity.dart';
 
 class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
   @override
-  final typeId = 0;
+  final int typeId = 0;
 
   @override
   ItemEntity read(BinaryReader reader) {
-    var numOfFields = reader.readByte();
-    var fields = <int, dynamic>{
-      for (var i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ItemEntity(
       fields[1] as String,
@@ -24,13 +24,16 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       fields[4] as String,
       (fields[5] as List)?.cast<String>(),
       fields[6] as String,
+      fields[7] as double,
+      fields[8] as double,
+      (fields[9] as List)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemEntity obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,6 +47,22 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       ..writeByte(5)
       ..write(obj.tags)
       ..writeByte(6)
-      ..write(obj.category);
+      ..write(obj.category)
+      ..writeByte(7)
+      ..write(obj.priceOfBaseUnit)
+      ..writeByte(8)
+      ..write(obj.quantityInBaseUnits)
+      ..writeByte(9)
+      ..write(obj.similarItemIds);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ItemEntityAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

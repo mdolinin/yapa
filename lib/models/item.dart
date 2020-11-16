@@ -78,11 +78,12 @@ class Item extends Equatable {
     return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category , similarItems: $similarItems }';
   }
 
-  ItemEntity toEntity() {
-    return ItemEntity(name, id, volume, selected, pathToImage, tags, category);
+  ItemEntity toEntity(List<String> similarIds) {
+    return ItemEntity(name, id, volume, selected, pathToImage, tags, category,
+        priceOfBaseUnit, quantityInBaseUnits, similarIds);
   }
 
-  static Item fromEntity(ItemEntity entity) {
+  static Item fromEntity(ItemEntity entity, List<Item> similarItems) {
     return Item(
       entity.name,
       selected: entity.selected ?? false,
@@ -91,6 +92,9 @@ class Item extends Equatable {
       pathToImage: entity.pathToImage,
       tags: entity.tags,
       category: entity.category,
+      priceOfBaseUnit: entity.priceOfBaseUnit,
+      quantityInBaseUnits: entity.quantityInBaseUnits,
+      similarItems: similarItems,
     );
   }
 }
