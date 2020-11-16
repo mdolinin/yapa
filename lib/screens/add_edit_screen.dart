@@ -52,8 +52,8 @@ class _AddEditScreenState extends State<AddEditScreen> {
     final textTheme = Theme.of(context).textTheme;
     _item = _item ?? (isEditing ? widget.item : Item(''));
     _selectedStores = _selectedStores..addAll(_item.tags);
-    _item.similarItems.forEach((store) {
-      _selectedStores = _selectedStores..addAll(store.tags);
+    _item.similarItems.forEach((item) {
+      _selectedStores = _selectedStores..addAll(item.tags);
     });
     return Scaffold(
       appBar: AppBar(
@@ -145,7 +145,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     }).toList(),
                   ),
                   Divider(),
-                  _selectedStores.length >= store_names.length
+                  _item.similarItems.length >= store_names.length
                       ? Row()
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.end,
