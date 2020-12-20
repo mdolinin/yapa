@@ -58,16 +58,12 @@ class ShoppingItemsTreeBloc
     }
 
     final items = event.items;
-    Set<String> similarIds = Set();
     for (Item item in items) {
-      similarIds.addAll(item.similarItems.map((e) => e.id).toSet());
-      if (!similarIds.contains(item.id)) {
-        //Add to main list with tag null
-        categorizeItem(taggedCategorizedItems[null], item);
-        //Select no tag and add to secondary list with tag ""
-        if (item.tags.isEmpty) {
-          categorizeItem(taggedCategorizedItems[""], item);
-        }
+      //Add to main list with tag null
+      categorizeItem(taggedCategorizedItems[null], item);
+      //Select no tag and add to secondary list with tag ""
+      if (item.tags.isEmpty) {
+        categorizeItem(taggedCategorizedItems[""], item);
       }
       List<String> tags = item.tags;
       for (String tag in tags) {

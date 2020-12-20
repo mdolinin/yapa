@@ -77,6 +77,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
             tags: sio.tags,
             quantityInBaseUnits: sio.quantityInBaseUnits,
             priceOfBaseUnit: sio.priceOfBaseUnit,
+            selected: sio.selected,
             similarItems: List.from(similarItemsOriginalPlusParent)
               ..remove(sio)))
         .toList();
