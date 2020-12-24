@@ -70,6 +70,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
@@ -93,7 +94,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                       },
                     );
                   } else {
-                    return Container();
+                    return SizedBox();
                   }
                 },
               ),
@@ -103,7 +104,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               if (state is ItemsLoaded) {
                 return ItemsSummaryTable(state);
               } else {
-                return Container();
+                return SizedBox();
               }
             })
           ],
