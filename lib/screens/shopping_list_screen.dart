@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items_bloc.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
@@ -72,7 +73,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 4.0, 8.0),
               child: BlocBuilder<SelectedBloc, SelectedState>(
                 builder: (BuildContext context, state) {
                   if (state is InitialSelectedState) {
@@ -97,6 +98,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
                 },
               ),
             ),
+            BlocBuilder<ItemsBloc, ItemsState>(
+                builder: (BuildContext context, state) {
+              if (state is ItemsLoaded) {
+                return ItemsSummaryTable(state);
+              } else {
+                return Container();
+              }
+            })
           ],
         ),
       ),
@@ -120,5 +129,69 @@ class _ShoppingListScreenState extends State<ShoppingListScreen>
               selectedBloc: BlocProvider.of<SelectedBloc>(context));
         },
         child: ShoppingListWidget());
+  }
+}
+
+class ItemsSummaryTable extends StatelessWidget {
+  final ItemsLoaded itemsLoaded;
+  const ItemsSummaryTable(this.itemsLoaded);
+
+  @override
+  Widget build(BuildContext context) {
+    return Table(
+      defaultColumnWidth: IntrinsicColumnWidth(),
+      children: [
+        TableRow(
+          children: [
+            TableCell(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4.0, 4.0, 0.0, 4.0),
+                child: Text(
+                  'Cart',
+                  textAlign: TextAlign.end,
+                ),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text('total: \$' +
+                    itemsLoaded.cartTotalPrice.toStringAsFixed(2)),
+              ),
+            ),
+            TableCell(
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text('qty:' + itemsLoaded.itemsInCart.toString()),
+              ),
+            ),
+          ],
+        ),
+        TableRow(children: [
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4.0, 4.0, 0.0, 4.0),
+              child: Text(
+                'List',
+                textAlign: TextAlign.end,
+              ),
+            ),
+          ),
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text(
+                  'total: \$' + itemsLoaded.listTotalPrice.toStringAsFixed(2)),
+            ),
+          ),
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text('qty:' + itemsLoaded.itemsInList.toString()),
+            ),
+          ),
+        ])
+      ],
+    );
   }
 }
