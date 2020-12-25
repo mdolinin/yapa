@@ -73,7 +73,7 @@ class ItemTileWidget extends StatelessWidget {
                     ),
             ),
             title: Text(item.name),
-            subtitle: Text(item.tags.first),
+            subtitle: Text(item.tags.isEmpty ? '' : item.tags.first),
             trailing: Checkbox(
               value: item.selected,
               onChanged: (bool value) => onSelect(item, value),
