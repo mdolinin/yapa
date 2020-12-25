@@ -145,7 +145,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     }).toList(),
                   ),
                   Divider(),
-                  _item.similarItems.length >= store_names.length
+                  _item.similarItems.length >= store_names.length - 1
                       ? Row()
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.end,
