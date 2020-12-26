@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,8 +70,8 @@ class ItemTileWidget extends StatelessWidget {
               child: item.pathToImage == ''
                   ? FlutterLogo(size: 44.0)
                   : Image(
-                      image: AssetImage(
-                          '${FileUtils.absolutePath(item.pathToImage)}'),
+                      image: FileImage(
+                          File('${FileUtils.absolutePath(item.pathToImage)}')),
                     ),
             ),
             title: Text(item.name),

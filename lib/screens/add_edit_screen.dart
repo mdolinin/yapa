@@ -30,7 +30,7 @@ class AddEditScreen extends StatefulWidget {
 
 class _AddEditScreenState extends State<AddEditScreen> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final _picker = ImagePicker();
   ScrollController _scrollController;
   bool _needsScroll = false;
   Image _preCachedItemImage;
@@ -41,11 +41,12 @@ class _AddEditScreenState extends State<AddEditScreen> {
   bool get isEditing => widget.isEditing;
 
   void _showPhotoLibrary(BuildContext context) async {
-    final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (image == null) return;
+    final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
     String appDocPath = FileUtils.appDocDir.path;
-    final fileName = basename(image.path);
-    await image.copy('$appDocPath/$fileName');
+    final fileName = basename(pickedFile.path);
+    final File file = File(pickedFile.path);
+    await file.copy('$appDocPath/$fileName');
     _preCachedItemImage = buildImageFromLocalFile(fileName);
     await precacheImage(_preCachedItemImage.image, context);
     setState(() {
@@ -56,7 +57,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
 
   Image buildImageFromLocalFile(String pathToFile) {
     return Image(
-      image: AssetImage('${FileUtils.absolutePath(pathToFile)}'),
+      image: FileImage(File('${FileUtils.absolutePath(pathToFile)}')),
     );
   }
 

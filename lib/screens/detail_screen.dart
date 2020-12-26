@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -69,8 +71,8 @@ class DetailsScreen extends StatelessWidget {
               item.pathToImage == ''
                   ? Image.memory(kTransparentImage)
                   : Image(
-                      image: AssetImage(
-                          '${FileUtils.absolutePath(item.pathToImage)}'),
+                      image: FileImage(
+                          File('${FileUtils.absolutePath(item.pathToImage)}')),
                     ),
             ],
           ),
