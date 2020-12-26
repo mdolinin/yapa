@@ -30,20 +30,64 @@ class AddEditScreen extends StatefulWidget {
 
 class _AddEditScreenState extends State<AddEditScreen> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  ScrollController _scrollController;
+  bool _needsScroll = false;
+  Image _preCachedItemImage;
+
   Item _item;
   Set<String> _selectedStores = Set();
 
   bool get isEditing => widget.isEditing;
 
-  void _showPhotoLibrary() async {
+  void _showPhotoLibrary(BuildContext context) async {
     final File image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
     String appDocPath = FileUtils.appDocDir.path;
     final fileName = basename(image.path);
     await image.copy('$appDocPath/$fileName');
+    _preCachedItemImage = buildImageFromLocalFile(fileName);
+    await precacheImage(_preCachedItemImage.image, context);
     setState(() {
       _item = _item.copyWith(pathToImage: fileName);
+      _needsScroll = true;
     });
+  }
+
+  Image buildImageFromLocalFile(String pathToFile) {
+    return Image(
+      image: AssetImage('${FileUtils.absolutePath(pathToFile)}'),
+    );
+  }
+
+  Image imageFrom(Item _item) {
+    return _item.pathToImage == ''
+        ? Image.memory(kTransparentImage)
+        : (_preCachedItemImage ?? buildImageFromLocalFile(_item.pathToImage));
+  }
+
+  void _scrollToEnd() async {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
+  void scrollToEndAfterBuildIfNeeded() {
+    if (_needsScroll) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
+      _needsScroll = false;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,6 +99,8 @@ class _AddEditScreenState extends State<AddEditScreen> {
     _item.similarItems.forEach((item) {
       _selectedStores = _selectedStores..addAll(item.tags);
     });
+    scrollToEndAfterBuildIfNeeded();
+    final itemImage = imageFrom(_item);
     return Scaffold(
       appBar: AppBar(
         title: isEditing ? Text('Edit item') : Text('Add item'),
@@ -68,6 +114,7 @@ class _AddEditScreenState extends State<AddEditScreen> {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 children: <Widget>[
                   TextFormField(
@@ -226,19 +273,14 @@ class _AddEditScreenState extends State<AddEditScreen> {
                     },
                   ),
                   Divider(),
+                  SizedBox(child: itemImage),
                   ListTile(
                     onTap: () {
-                      _showPhotoLibrary();
+                      _showPhotoLibrary(context);
                     },
                     leading: Icon(Icons.photo_library),
                     title: Text("Choose from photo library"),
                   ),
-                  _item.pathToImage == ''
-                      ? Image.memory(kTransparentImage)
-                      : Image(
-                          image: AssetImage(
-                              '${FileUtils.absolutePath(_item.pathToImage)}'),
-                        ),
                 ],
               ),
             ),
