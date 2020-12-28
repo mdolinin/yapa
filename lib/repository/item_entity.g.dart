@@ -19,7 +19,7 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
     return ItemEntity(
       fields[1] as String,
       fields[0] as String,
-      fields[2] as String,
+      fields[2] as QuantityType,
       fields[3] as bool,
       fields[4] as String,
       (fields[5] as List)?.cast<String>(),
@@ -39,7 +39,7 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.volume)
+      ..write(obj.qtyType)
       ..writeByte(3)
       ..write(obj.selected)
       ..writeByte(4)

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:yapa/models/quantity_type.dart';
 
 part 'item_entity.g.dart';
 
@@ -9,7 +10,7 @@ class ItemEntity {
   @HiveField(1)
   final String name;
   @HiveField(2)
-  final String volume;
+  final QuantityType qtyType;
   @HiveField(3)
   final bool selected;
   @HiveField(4)
@@ -28,7 +29,7 @@ class ItemEntity {
   ItemEntity(
       this.name,
       this.id,
-      this.volume,
+      this.qtyType,
       this.selected,
       this.pathToImage,
       this.tags,
@@ -41,7 +42,7 @@ class ItemEntity {
   int get hashCode =>
       selected.hashCode ^
       name.hashCode ^
-      volume.hashCode ^
+      qtyType.hashCode ^
       id.hashCode ^
       pathToImage.hashCode ^
       tags.hashCode ^
@@ -57,7 +58,7 @@ class ItemEntity {
           runtimeType == other.runtimeType &&
           selected == other.selected &&
           name == other.name &&
-          volume == other.volume &&
+          qtyType == other.qtyType &&
           pathToImage == other.pathToImage &&
           tags == other.tags &&
           category == other.category &&
@@ -70,7 +71,7 @@ class ItemEntity {
     return {
       'selected': selected,
       'name': name,
-      'volume': volume,
+      'qtyType': qtyType,
       'id': id,
       'pathToImage': pathToImage,
       'tags': tags,
@@ -83,14 +84,14 @@ class ItemEntity {
 
   @override
   String toString() {
-    return 'ItemEntity {selected: $selected, name: $name, volume: $volume, id: $id, pathToImage: $pathToImage, tags: $tags, category: $category, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, similarItemIds: $similarItemIds}';
+    return 'ItemEntity {selected: $selected, name: $name, qtyType: $qtyType, id: $id, pathToImage: $pathToImage, tags: $tags, category: $category, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, similarItemIds: $similarItemIds}';
   }
 
   static ItemEntity fromJson(Map<String, Object> json) {
     return ItemEntity(
       json['name'] as String,
       json['id'] as String,
-      json['volume'] as String,
+      json['qtyType'] as QuantityType,
       json['selected'] as bool,
       json['pathToImage'] as String,
       json['tags'] as List<String>,

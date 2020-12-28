@@ -9,6 +9,7 @@ import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/items/items_bloc.dart';
 import 'package:yapa/logging_bloc_delegate.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/category_entity.dart';
 import 'package:yapa/repository/hive_categories_repository.dart';
 import 'package:yapa/repository/hive_items_repository.dart';
@@ -25,6 +26,7 @@ import 'bloc/shopping_list/shopping_items_tree.dart';
 void main() async {
   BlocSupervisor.delegate = LoggingBlocDelegate();
   await Hive.initFlutter();
+  Hive.registerAdapter<QuantityType>(QuantityTypeAdapter());
   Hive.registerAdapter<ItemEntity>(ItemEntityAdapter());
   Hive.registerAdapter<CategoryEntity>(CategoryEntityAdapter());
   final itemsBox = await Hive.openBox<ItemEntity>(k_items_box_name);

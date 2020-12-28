@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -31,7 +32,7 @@ class DetailsScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline5),
               ),
               Center(
-                child: Text('${item.volume}',
+                child: Text('${item.qtyType.toStr}',
                     style: Theme.of(context).textTheme.headline6),
               ),
               Center(

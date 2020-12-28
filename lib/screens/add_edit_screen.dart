@@ -10,6 +10,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
+import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/stores_repository.dart';
 import 'package:yapa/utils/file_utils.dart';
 
@@ -132,13 +133,21 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       _item = _item.copyWith(name: value);
                     },
                   ),
-                  Divider(),
-                  TextFormField(
-                    initialValue: _item.volume,
-                    decoration: InputDecoration(hintText: 'Enter item volume'),
-                    style: textTheme.headline5,
-                    onSaved: (value) {
-                      _item = _item.copyWith(volume: value);
+                  DropdownButtonFormField<QuantityType>(
+                    value: (_item.qtyType == QuantityType.not_applicable &&
+                            !isEditing)
+                        ? null
+                        : _item.qtyType,
+                    decoration:
+                        InputDecoration(hintText: 'Select quantity type'),
+                    items: QuantityType.values.map((QuantityType qtyType) {
+                      return DropdownMenuItem<QuantityType>(
+                          value: qtyType, child: Text(qtyType.toStr));
+                    }).toList(),
+                    onChanged: (QuantityType value) {
+                      setState(() {
+                        _item = _item.copyWith(qtyType: value);
+                      });
                     },
                   ),
                   Divider(),
@@ -162,7 +171,6 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       });
                     },
                   ),
-                  Divider(),
                   Column(
                     children: _item.similarItems.asMap().entries.map((entry) {
                       int idx = entry.key;
@@ -192,7 +200,6 @@ class _AddEditScreenState extends State<AddEditScreen> {
                       );
                     }).toList(),
                   ),
-                  Divider(),
                   _item.similarItems.length >= store_names.length - 1
                       ? Row()
                       : Row(

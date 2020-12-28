@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/repository/items_repository.dart';
 
@@ -16,7 +17,7 @@ class MockItemsRepository implements ItemsRepository {
               ItemEntity(
                 '100% Wheat Bread',
                 '1',
-                '20 oz',
+                QuantityType.oz,
                 false,
                 'images/1.jpeg',
                 ['Aldi', 'Wallmart', 'Bravo'],
@@ -28,7 +29,7 @@ class MockItemsRepository implements ItemsRepository {
               ItemEntity(
                 'Cookies Choc. Chips',
                 '2',
-                '13 oz',
+                QuantityType.roll,
                 false,
                 'images/2.jpeg',
                 ['Wallmart', 'Bravo'],
@@ -40,7 +41,7 @@ class MockItemsRepository implements ItemsRepository {
               ItemEntity(
                 'Crackers',
                 '3',
-                '13 oz',
+                QuantityType.box,
                 true,
                 'images/3.jpeg',
                 ['Aldi', 'Bravo'],
@@ -52,7 +53,7 @@ class MockItemsRepository implements ItemsRepository {
               ItemEntity(
                 'Pretzels',
                 '4',
-                '16 oz',
+                QuantityType.pack,
                 false,
                 'images/4.jpeg',
                 ['Dollar Tree', 'Bravo'],
@@ -64,7 +65,7 @@ class MockItemsRepository implements ItemsRepository {
               ItemEntity(
                 'Italian Loaf',
                 '5',
-                '14 oz',
+                QuantityType.each,
                 true,
                 'images/5.jpeg',
                 ['Aldi', 'Wallmart', 'Dollar Tree'],

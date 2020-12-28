@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/item_entity.dart';
 
 class Item extends Equatable {
   final String id;
   final String name;
-  final String volume;
+  final QuantityType qtyType;
   final bool selected;
   final String pathToImage;
   final List<String> tags;
@@ -17,7 +18,7 @@ class Item extends Equatable {
   Item(
     this.name, {
     this.selected = false,
-    String volume = '',
+    QuantityType qtyType = QuantityType.not_applicable,
     String pathToImage = '',
     List<String> tags = const [],
     String category = '',
@@ -25,7 +26,7 @@ class Item extends Equatable {
     double priceOfBaseUnit,
     double quantityInBaseUnits,
     List<Item> similarItems = const [],
-  })  : this.volume = volume ?? '',
+  })  : this.qtyType = qtyType ?? QuantityType.not_applicable,
         this.pathToImage = pathToImage ?? '',
         this.tags = tags ?? [],
         this.category = category ?? '',
@@ -37,7 +38,7 @@ class Item extends Equatable {
   Item copyWith(
       {bool selected,
       String id,
-      String volume,
+      QuantityType qtyType,
       String name,
       String pathToImage,
       List<String> tags,
@@ -49,7 +50,7 @@ class Item extends Equatable {
       name ?? this.name,
       selected: selected ?? this.selected,
       id: id ?? this.id,
-      volume: volume ?? this.volume,
+      qtyType: qtyType ?? this.qtyType,
       pathToImage: pathToImage ?? this.pathToImage,
       tags: tags ?? this.tags,
       priceOfBaseUnit: priceOfBaseUnit ?? this.priceOfBaseUnit,
@@ -63,7 +64,7 @@ class Item extends Equatable {
   List<Object> get props => [
         selected,
         id,
-        volume,
+        qtyType,
         name,
         pathToImage,
         tags,
@@ -75,11 +76,11 @@ class Item extends Equatable {
 
   @override
   String toString() {
-    return 'Item { selected: $selected, name: $name, volume: $volume,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category , similarItems: $similarItems }';
+    return 'Item { selected: $selected, name: $name, qtyType: $qtyType,  pathToImage: $pathToImage, id: $id, tags: $tags, priceOfBaseUnit: $priceOfBaseUnit, quantityInBaseUnits: $quantityInBaseUnits, category: $category , similarItems: $similarItems }';
   }
 
   ItemEntity toEntity(List<String> similarIds) {
-    return ItemEntity(name, id, volume, selected, pathToImage, tags, category,
+    return ItemEntity(name, id, qtyType, selected, pathToImage, tags, category,
         priceOfBaseUnit, quantityInBaseUnits, similarIds);
   }
 
@@ -87,7 +88,7 @@ class Item extends Equatable {
     return Item(
       entity.name,
       selected: entity.selected ?? false,
-      volume: entity.volume,
+      qtyType: entity.qtyType,
       id: entity.id ?? Uuid().v4(),
       pathToImage: entity.pathToImage,
       tags: entity.tags,
