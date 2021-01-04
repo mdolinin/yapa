@@ -20,7 +20,7 @@ class CategoryListWidget extends StatelessWidget {
           );
         } else if (state is ShoppingItemsTreeLoaded) {
           final List<CategorizedItems> categorizedItemsList =
-              state.taggedCategorizedItems[tag];
+              state.taggedCategorizedItems[tag] ?? [];
           return ReorderableListView(
             onReorder: _onReorder(context, tag, categorizedItemsList),
             children: categorizedItemsList.map((ci) {
