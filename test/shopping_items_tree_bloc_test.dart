@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:test/test.dart';
+import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree.dart';
 import 'package:yapa/models/item.dart';
@@ -7,6 +8,9 @@ import 'package:yapa/models/tagged_categorized_items.dart';
 
 class MockItemsBloc extends MockBloc<ItemsEvent, ItemsState>
     implements ItemsBloc {}
+
+class MockCategoriesBloc extends MockBloc<CategoriesEvent, CategoriesState>
+    implements CategoriesBloc {}
 
 void main() {
   group('FilteredItemsBloc', () {
@@ -21,7 +25,10 @@ void main() {
             ItemsLoaded([Item('Crackers', id: '0')]),
           ]),
         );
-        return ShoppingItemsTreeBloc(itemsBloc: itemsBloc);
+        final categoriesBloc = MockCategoriesBloc();
+        whenListen(categoriesBloc, Stream<CategoriesState>.empty());
+        return ShoppingItemsTreeBloc(
+            itemsBloc: itemsBloc, categoriesBloc: categoriesBloc);
       },
       expect: [
         ShoppingItemsTreeLoading(),
@@ -71,7 +78,10 @@ void main() {
           itemsBloc,
           Stream<ItemsState>.fromIterable([]),
         );
-        return ShoppingItemsTreeBloc(itemsBloc: itemsBloc);
+        final categoriesBloc = MockCategoriesBloc();
+        whenListen(categoriesBloc, Stream<CategoriesState>.empty());
+        return ShoppingItemsTreeBloc(
+            itemsBloc: itemsBloc, categoriesBloc: categoriesBloc);
       },
       act: (ShoppingItemsTreeBloc bloc) async {
         bloc

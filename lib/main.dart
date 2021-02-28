@@ -8,6 +8,7 @@ import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/items/items_bloc.dart';
 import 'package:yapa/logging_bloc_delegate.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/category_entity.dart';
@@ -15,6 +16,7 @@ import 'package:yapa/repository/hive_categories_repository.dart';
 import 'package:yapa/repository/hive_items_repository.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/routes.dart';
+import 'package:yapa/screens/add_edit_category_screen.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/categories_list_screen.dart';
 import 'package:yapa/screens/shopping_list_screen.dart';
@@ -45,8 +47,9 @@ void main() async {
             ..add(LoadCategories())),
     ],
     child: BlocProvider(
-      create: (BuildContext context) =>
-          ShoppingItemsTreeBloc(itemsBloc: BlocProvider.of<ItemsBloc>(context)),
+      create: (BuildContext context) => ShoppingItemsTreeBloc(
+          itemsBloc: BlocProvider.of<ItemsBloc>(context),
+          categoriesBloc: BlocProvider.of<CategoriesBloc>(context)),
       child: YapaApp(),
     ),
   ));
@@ -71,6 +74,13 @@ class YapaApp extends StatelessWidget {
               isEditing: false,
             ),
         Routes.categories: (context) => CategoriesListScreen(),
+        Routes.addCategory: (context) => AddEditCategoryScreen(
+              onSave: (Category category) {
+                BlocProvider.of<CategoriesBloc>(context)
+                    .add(AddCategory(category));
+              },
+              isEditing: false,
+            ),
       },
     );
   }

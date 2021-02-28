@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yapa/repository/stores_repository.dart';
+import 'package:yapa/routes.dart';
 import 'package:yapa/widgets/app_drawer.dart';
 import 'package:yapa/widgets/category_list_widget.dart';
 
@@ -58,6 +59,13 @@ class _CategoriesListScreenState extends State<CategoriesListScreen>
                 ..insert(0, CategoryListWidget(tag: null)),
           controller: _tabController,
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, Routes.addCategory);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
 
@@ -15,6 +16,18 @@ class ItemsUpdated extends ShoppingItemsTreeEvent {
 
   @override
   List<Object> get props => [items];
+
+  @override
+  bool get stringify => true;
+}
+
+class CategoriesUpdated extends ShoppingItemsTreeEvent {
+  final List<Category> categories;
+
+  const CategoriesUpdated(this.categories);
+
+  @override
+  List<Object> get props => [categories];
 
   @override
   bool get stringify => true;

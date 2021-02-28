@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/bloc/items/items.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
 import 'package:yapa/repository/category_repository.dart';
@@ -14,12 +16,20 @@ class ShoppingItemsTreeBloc
   final List<String> defaultCategoriesOrder = category_names.toList();
 
   final ItemsBloc itemsBloc;
+  final CategoriesBloc categoriesBloc;
   StreamSubscription itemsSubscription;
+  StreamSubscription categoriesSubscription;
 
-  ShoppingItemsTreeBloc({@required this.itemsBloc}) {
+  ShoppingItemsTreeBloc(
+      {@required this.itemsBloc, @required this.categoriesBloc}) {
     itemsSubscription = itemsBloc.listen((state) {
       if (state is ItemsLoaded) {
         add(ItemsUpdated(state.items));
+      }
+    });
+    categoriesSubscription = categoriesBloc.listen((state) {
+      if (state is CategoriesLoaded) {
+        add(CategoriesUpdated(state.categories));
       }
     });
   }
@@ -34,6 +44,8 @@ class ShoppingItemsTreeBloc
       yield* _mapCategorizedItemsUpdatedToState(event);
     } else if (event is ItemsUpdated) {
       yield* _mapItemsUpdatedToState(event);
+    } else if (event is CategoriesUpdated) {
+      yield* _mapCategoriesUpdatedToState(event);
     }
   }
 
@@ -54,7 +66,8 @@ class ShoppingItemsTreeBloc
       });
       taggedCategorizedItems = newState;
     } else {
-      taggedCategorizedItems = buildDefaultShoppingItemsTree();
+      taggedCategorizedItems =
+          buildDefaultShoppingItemsTreeFrom(defaultCategoriesOrder.toSet());
     }
 
     final items = event.items;
@@ -80,15 +93,49 @@ class ShoppingItemsTreeBloc
     yield ShoppingItemsTreeLoaded(taggedCategorizedItems);
   }
 
-  Map<String, List<CategorizedItems>> buildDefaultShoppingItemsTree() {
+  Stream<ShoppingItemsTreeState> _mapCategoriesUpdatedToState(
+      CategoriesUpdated event) async* {
+    final List<Category> categories = event.categories;
+    final Set<String> categoriesNames = categories.map((e) => e.name).toSet();
+    Map<String, List<CategorizedItems>> taggedCategorizedItems;
+    if (state is ShoppingItemsTreeLoaded) {
+      Map<String, List<CategorizedItems>> oldState =
+          (state as ShoppingItemsTreeLoaded).taggedCategorizedItems;
+      Map<String, List<CategorizedItems>> newState = {};
+      oldState.forEach((key, oldList) {
+        List<CategorizedItems> newCategorizedItems = [];
+        for (String newCategoryName in categoriesNames) {
+          bool existingCategory = false;
+          for (CategorizedItems oldItems in oldList) {
+            if (oldItems.category == newCategoryName) {
+              newCategorizedItems
+                  .add(CategorizedItems(oldItems.category, oldItems.items));
+              existingCategory = true;
+              break;
+            }
+          }
+          if (!existingCategory) {
+            newCategorizedItems.add(CategorizedItems(newCategoryName, []));
+          }
+        }
+        newState[key] = newCategorizedItems;
+      });
+      taggedCategorizedItems = newState;
+    } else {
+      taggedCategorizedItems =
+          buildDefaultShoppingItemsTreeFrom(categoriesNames);
+    }
+    yield ShoppingItemsTreeLoaded(taggedCategorizedItems);
+  }
+
+  Map<String, List<CategorizedItems>> buildDefaultShoppingItemsTreeFrom(
+      Set<String> categoriesOrder) {
     final Map<String, List<CategorizedItems>> defaultTaggedCategorizedItems =
         {};
-    defaultTaggedCategorizedItems[null] = defaultCategoriesOrder
-        .map((name) => CategorizedItems(name, []))
-        .toList();
-    defaultTaggedCategorizedItems[''] = defaultCategoriesOrder
-        .map((name) => CategorizedItems(name, []))
-        .toList();
+    defaultTaggedCategorizedItems[null] =
+        categoriesOrder.map((name) => CategorizedItems(name, [])).toList();
+    defaultTaggedCategorizedItems[''] =
+        categoriesOrder.map((name) => CategorizedItems(name, [])).toList();
     return defaultTaggedCategorizedItems;
   }
 
@@ -120,6 +167,7 @@ class ShoppingItemsTreeBloc
   @override
   Future<void> close() {
     itemsSubscription.cancel();
+    categoriesSubscription.cancel();
     return super.close();
   }
 }
