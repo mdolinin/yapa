@@ -6,7 +6,7 @@ import 'package:yapa/models/item.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
 import 'package:yapa/screens/add_edit_screen.dart';
 import 'package:yapa/screens/detail_screen.dart';
-import 'package:yapa/widgets/category_title_widget.dart';
+import 'package:yapa/widgets/category_with_items_title_widget.dart';
 import 'package:yapa/widgets/item_tile_widget.dart';
 
 class ShoppingListWidget extends StatelessWidget {
@@ -32,7 +32,7 @@ class ShoppingListWidget extends StatelessWidget {
                   .where((e) => e.items.isNotEmpty)
                   .map((ci) {
                 return ExpansionTile(
-                  title: CategoryTitleWidget(
+                  title: CategoryWithItemsTitleWidget(
                     name: ci.category,
                     itemCount: ci.items.length,
                   ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CategoryTitleWidget extends StatelessWidget {
+class CategoryWithItemsTitleWidget extends StatelessWidget {
   final String name;
   final int itemCount;
 
-  const CategoryTitleWidget({this.name, this.itemCount});
+  const CategoryWithItemsTitleWidget({this.name, this.itemCount});
 
   @override
   Widget build(BuildContext context) {
