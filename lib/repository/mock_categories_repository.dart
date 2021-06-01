@@ -16,4 +16,9 @@ class MockCategoriesRepository extends CategoriesRepository {
   Future<bool> saveCategories(List<CategoryEntity> categories) async {
     return Future.value(true);
   }
+
+  @override
+  CategoryEntity findBy(String name) {
+    return CategoryEntity('', name);
+  }
 }

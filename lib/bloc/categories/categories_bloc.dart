@@ -79,4 +79,8 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
     return categoriesRepository.saveCategories(
         categories.map((category) => category.toEntity()).toList());
   }
+
+  Category findCategoryByName(String name) {
+    return Category.fromEntity(this.categoriesRepository.findBy(name));
+  }
 }

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree_bloc.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree_event.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
+import 'package:yapa/screens/add_edit_category_screen.dart';
+import 'package:yapa/widgets/category_tile_widget.dart';
 
 class CategoryListWidget extends StatelessWidget {
   final String tag;
@@ -30,15 +34,11 @@ class CategoryListWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 elevation: 0.5,
-                child: ListTile(
-                  title: ci.category == ''
-                      ? Text('No category')
-                      : Text(ci.category),
-                  trailing: Icon(
-                    Icons.reorder,
-                  ),
-                  onTap: () => {},
-                ),
+                child: CategoryTileWidget(
+                    category: findCategoryByName(context, ci),
+                    onEdit: _openEditScreen(context),
+                    onDelete: _deleteCategoryWithSnackBar(context),
+                    onTap: (Category category) => {}),
               );
             }).toList(),
           );
@@ -47,6 +47,52 @@ class CategoryListWidget extends StatelessWidget {
         }
       },
     );
+  }
+
+  Category findCategoryByName(BuildContext context, CategorizedItems ci) {
+    return BlocProvider.of<CategoriesBloc>(context)
+        .findCategoryByName(ci.category);
+  }
+
+  Function _openEditScreen(BuildContext context) {
+    return (Category category) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) {
+          return AddEditCategoryScreen(
+            onSave: (Category updatedCategory) {
+              BlocProvider.of<CategoriesBloc>(context).add(
+                UpdateCategory(updatedCategory.copyWith(id: category.id)),
+              );
+            },
+            isEditing: true,
+            category: category,
+          );
+        }),
+      );
+    };
+  }
+
+  Function _deleteCategoryWithSnackBar(BuildContext context) {
+    return (Category category) {
+      BlocProvider.of<CategoriesBloc>(context).add(DeleteCategory(category));
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "${category.name} deleted",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          duration: Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              BlocProvider.of<CategoriesBloc>(context)
+                  .add(AddCategory(category));
+            },
+          ),
+        ),
+      );
+    };
   }
 
   Function _onReorder(BuildContext context, String tag,

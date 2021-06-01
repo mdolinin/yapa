@@ -29,4 +29,6 @@ abstract class CategoriesRepository {
         .forEach((n) => categories.add(Category(n).toEntity()));
     saveCategories(categories);
   }
+
+  CategoryEntity findBy(String name);
 }

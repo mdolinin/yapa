@@ -25,4 +25,11 @@ class HiveCategoriesRepository extends CategoriesRepository {
     categoriesBox.putAll(categoriesMap);
     return Future.value(true);
   }
+
+  @override
+  CategoryEntity findBy(String name) {
+    return categoriesBox.keys
+        .map((key) => categoriesBox.get(key))
+        .firstWhere((element) => element.name == name);
+  }
 }
