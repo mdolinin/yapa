@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:yapa/models/quantity_type.dart';
+import 'package:yapa/repository/category_entity.dart';
 import 'package:yapa/repository/item_entity.dart';
 import 'package:yapa/repository/items_repository.dart';
 
@@ -21,7 +22,7 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/1.jpeg',
                 ['Aldi', 'Wallmart', 'Bravo'],
-                'Bread and Cookies',
+                CategoryEntity('Bread and Cookies', '1'),
                 0.1,
                 1,
                 [],
@@ -33,7 +34,7 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/2.jpeg',
                 ['Wallmart', 'Bravo'],
-                'Bread and Cookies',
+                CategoryEntity('Bread and Cookies', '1'),
                 0.1,
                 1,
                 [],
@@ -45,7 +46,7 @@ class MockItemsRepository implements ItemsRepository {
                 true,
                 'images/3.jpeg',
                 ['Aldi', 'Bravo'],
-                'Bread and Cookies',
+                CategoryEntity('Bread and Cookies', '1'),
                 0.1,
                 1,
                 [],
@@ -57,7 +58,7 @@ class MockItemsRepository implements ItemsRepository {
                 false,
                 'images/4.jpeg',
                 ['Dollar Tree', 'Bravo'],
-                'Bread and Cookies',
+                CategoryEntity('Bread and Cookies', '1'),
                 0.1,
                 1,
                 [],
@@ -69,7 +70,7 @@ class MockItemsRepository implements ItemsRepository {
                 true,
                 'images/5.jpeg',
                 ['Aldi', 'Wallmart', 'Dollar Tree'],
-                'Bread and Cookies',
+                CategoryEntity('Bread and Cookies', '1'),
                 0.1,
                 1,
                 [],

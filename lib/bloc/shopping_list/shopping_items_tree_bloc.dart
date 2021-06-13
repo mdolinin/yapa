@@ -13,7 +13,7 @@ import './shopping_items_tree.dart';
 
 class ShoppingItemsTreeBloc
     extends Bloc<ShoppingItemsTreeEvent, ShoppingItemsTreeState> {
-  final List<String> defaultCategoriesOrder = category_names.toList();
+  final List<Category> defaultCategoriesOrder = defaultCategories.toList();
 
   final ItemsBloc itemsBloc;
   final CategoriesBloc categoriesBloc;
@@ -67,7 +67,7 @@ class ShoppingItemsTreeBloc
       taggedCategorizedItems = newState;
     } else {
       taggedCategorizedItems =
-          buildDefaultShoppingItemsTreeFrom(defaultCategoriesOrder.toSet());
+          buildDefaultShoppingItemsTreeFrom(defaultCategoriesOrder);
     }
 
     final items = event.items;
@@ -96,7 +96,6 @@ class ShoppingItemsTreeBloc
   Stream<ShoppingItemsTreeState> _mapCategoriesUpdatedToState(
       CategoriesUpdated event) async* {
     final List<Category> categories = event.categories;
-    final Set<String> categoriesNames = categories.map((e) => e.name).toSet();
     Map<String, List<CategorizedItems>> taggedCategorizedItems;
     if (state is ShoppingItemsTreeLoaded) {
       Map<String, List<CategorizedItems>> oldState =
@@ -104,32 +103,31 @@ class ShoppingItemsTreeBloc
       Map<String, List<CategorizedItems>> newState = {};
       oldState.forEach((key, oldList) {
         List<CategorizedItems> newCategorizedItems = [];
-        for (String newCategoryName in categoriesNames) {
+        for (Category newCategory in categories) {
           bool existingCategory = false;
           for (CategorizedItems oldItems in oldList) {
-            if (oldItems.category == newCategoryName) {
+            if (oldItems.category.id == newCategory.id) {
               newCategorizedItems
-                  .add(CategorizedItems(oldItems.category, oldItems.items));
+                  .add(CategorizedItems(newCategory, oldItems.items));
               existingCategory = true;
               break;
             }
           }
           if (!existingCategory) {
-            newCategorizedItems.add(CategorizedItems(newCategoryName, []));
+            newCategorizedItems.add(CategorizedItems(newCategory, []));
           }
         }
         newState[key] = newCategorizedItems;
       });
       taggedCategorizedItems = newState;
     } else {
-      taggedCategorizedItems =
-          buildDefaultShoppingItemsTreeFrom(categoriesNames);
+      taggedCategorizedItems = buildDefaultShoppingItemsTreeFrom(categories);
     }
     yield ShoppingItemsTreeLoaded(taggedCategorizedItems);
   }
 
   Map<String, List<CategorizedItems>> buildDefaultShoppingItemsTreeFrom(
-      Set<String> categoriesOrder) {
+      List<Category> categoriesOrder) {
     final Map<String, List<CategorizedItems>> defaultTaggedCategorizedItems =
         {};
     defaultTaggedCategorizedItems[null] =

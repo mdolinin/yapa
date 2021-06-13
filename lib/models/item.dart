@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/item_entity.dart';
 
@@ -10,7 +11,7 @@ class Item extends Equatable {
   final bool selected;
   final String pathToImage;
   final List<String> tags;
-  final String category;
+  final Category category;
   final double priceOfBaseUnit;
   final double quantityInBaseUnits;
   final List<Item> similarItems;
@@ -21,7 +22,7 @@ class Item extends Equatable {
     QuantityType qtyType = QuantityType.not_applicable,
     String pathToImage = '',
     List<String> tags = const [],
-    String category = '',
+    Category category,
     String id,
     double priceOfBaseUnit,
     double quantityInBaseUnits,
@@ -29,7 +30,7 @@ class Item extends Equatable {
   })  : this.qtyType = qtyType ?? QuantityType.not_applicable,
         this.pathToImage = pathToImage ?? '',
         this.tags = tags ?? [],
-        this.category = category ?? '',
+        this.category = category ?? noCategory,
         this.priceOfBaseUnit = priceOfBaseUnit ?? 0.0,
         this.quantityInBaseUnits = quantityInBaseUnits ?? 0.0,
         this.similarItems = similarItems ?? [],
@@ -45,7 +46,7 @@ class Item extends Equatable {
       double priceOfBaseUnit,
       double quantityInBaseUnits,
       List<Item> similarItems,
-      String category}) {
+      Category category}) {
     return Item(
       name ?? this.name,
       selected: selected ?? this.selected,
@@ -80,8 +81,8 @@ class Item extends Equatable {
   }
 
   ItemEntity toEntity(List<String> similarIds) {
-    return ItemEntity(name, id, qtyType, selected, pathToImage, tags, category,
-        priceOfBaseUnit, quantityInBaseUnits, similarIds);
+    return ItemEntity(name, id, qtyType, selected, pathToImage, tags,
+        category.toEntity(), priceOfBaseUnit, quantityInBaseUnits, similarIds);
   }
 
   static Item fromEntity(ItemEntity entity, List<Item> similarItems) {
@@ -92,7 +93,7 @@ class Item extends Equatable {
       id: entity.id ?? Uuid().v4(),
       pathToImage: entity.pathToImage,
       tags: entity.tags,
-      category: entity.category,
+      category: Category.fromEntity(entity.category),
       priceOfBaseUnit: entity.priceOfBaseUnit,
       quantityInBaseUnits: entity.quantityInBaseUnits,
       similarItems: similarItems,

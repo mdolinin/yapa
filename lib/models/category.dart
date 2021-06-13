@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yapa/repository/category_entity.dart';
 
+final noCategory = Category('', id: '');
+
 class Category extends Equatable {
   final String id;
   final String name;

@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:yapa/bloc/categories/categories.dart';
-import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/quantity_type.dart';
 import 'package:yapa/repository/stores_repository.dart';
@@ -242,20 +241,18 @@ class _AddEditScreenState extends State<AddEditScreen> {
                           child: CircularProgressIndicator(),
                         );
                       } else if (state is CategoriesLoaded) {
-                        final categoryNames = state.categories
-                            .map((Category c) => c.name)
-                            .toList();
+                        final categories = state.categories;
                         return Wrap(
                           alignment: WrapAlignment.spaceAround,
-                          children: categoryNames
-                              .where((n) => n != '')
+                          children: categories
+                              .where((c) => c.name != '')
                               .map(
-                                (name) => ChoiceChip(
-                                  label: Text('$name'),
-                                  selected: _item.category == name,
+                                (c) => ChoiceChip(
+                                  label: Text('${c.name}'),
+                                  selected: _item.category.id == c.id,
                                   onSelected: (bool selected) {
                                     setState(() {
-                                      _item = _item.copyWith(category: name);
+                                      _item = _item.copyWith(category: c);
                                     });
                                   },
                                 ),

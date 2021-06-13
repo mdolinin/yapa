@@ -1,6 +1,8 @@
 import 'package:hive/hive.dart';
 import 'package:yapa/models/quantity_type.dart';
 
+import 'category_entity.dart';
+
 part 'item_entity.g.dart';
 
 @HiveType(typeId: 0)
@@ -18,7 +20,7 @@ class ItemEntity {
   @HiveField(5)
   final List<String> tags;
   @HiveField(6)
-  final String category;
+  final CategoryEntity category;
   @HiveField(7)
   final double priceOfBaseUnit;
   @HiveField(8)
@@ -95,7 +97,7 @@ class ItemEntity {
       json['selected'] as bool,
       json['pathToImage'] as String,
       json['tags'] as List<String>,
-      json['category'] as String,
+      json['category'] as CategoryEntity,
       json['priceOfBaseUnit'] as double,
       json['quantityInBaseUnits'] as double,
       json['similarItemIds'] as List<String>,

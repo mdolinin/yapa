@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'package:yapa/bloc/shopping_list/filtered_items.dart';
 import 'package:yapa/bloc/shopping_list/selected.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
 
@@ -25,7 +26,7 @@ void main() {
           Stream<ShoppingItemsTreeLoaded>.fromIterable([
             ShoppingItemsTreeLoaded({
               "": [
-                CategorizedItems("", [Item('Crackers', id: '0')])
+                CategorizedItems(noCategory, [Item('Crackers', id: '0')])
               ]
             }),
           ]),
@@ -43,7 +44,7 @@ void main() {
       expect: [
         FilteredItemsStateLoading(),
         FilteredItemsStateLoaded("", false, [
-          CategorizedItems("", [Item('Crackers', id: '0')])
+          CategorizedItems(noCategory, [Item('Crackers', id: '0')])
         ]),
       ],
     );
@@ -53,7 +54,7 @@ void main() {
       build: () {
         var itemsLoaded = ShoppingItemsTreeLoaded({
           "": [
-            CategorizedItems("", [Item('Pretzels', id: '1')])
+            CategorizedItems(noCategory, [Item('Pretzels', id: '1')])
           ]
         });
         final shoppingItemsTreeBloc = MockShoppingItemsTreeBloc();
@@ -79,9 +80,9 @@ void main() {
       expect: [
         FilteredItemsStateLoading(),
         FilteredItemsStateLoaded("", false, [
-          CategorizedItems("", [Item('Pretzels', id: '1')])
+          CategorizedItems(noCategory, [Item('Pretzels', id: '1')])
         ]),
-        FilteredItemsStateLoaded("", true, [CategorizedItems("", [])]),
+        FilteredItemsStateLoaded("", true, [CategorizedItems(noCategory, [])]),
       ],
     );
   });

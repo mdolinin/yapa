@@ -23,7 +23,7 @@ class ItemEntityAdapter extends TypeAdapter<ItemEntity> {
       fields[3] as bool,
       fields[4] as String,
       (fields[5] as List)?.cast<String>(),
-      fields[6] as String,
+      fields[6] as CategoryEntity,
       fields[7] as double,
       fields[8] as double,
       (fields[9] as List)?.cast<String>(),

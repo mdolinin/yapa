@@ -33,11 +33,11 @@ class ShoppingListWidget extends StatelessWidget {
                   .map((ci) {
                 return ExpansionTile(
                   title: CategoryWithItemsTitleWidget(
-                    name: ci.category,
+                    name: ci.category.name,
                     itemCount: ci.items.length,
                   ),
-                  leading: ci.category == '' ? Icon(Icons.category) : null,
-                  key: PageStorageKey<String>("${tag}__${ci.category}"),
+                  leading: ci.category.name == '' ? Icon(Icons.category) : null,
+                  key: PageStorageKey<String>("${tag}__${ci.category.id}"),
                   initiallyExpanded: true,
                   children: ci.items
                       .map((item) => ItemTileWidget(

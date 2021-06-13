@@ -51,7 +51,7 @@ class CategoryListWidget extends StatelessWidget {
 
   Category findCategoryByName(BuildContext context, CategorizedItems ci) {
     return BlocProvider.of<CategoriesBloc>(context)
-        .findCategoryByName(ci.category);
+        .findCategoryByName(ci.category.name);
   }
 
   Function _openEditScreen(BuildContext context) {

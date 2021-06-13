@@ -3,8 +3,10 @@ import 'package:test/test.dart';
 import 'package:yapa/bloc/categories/categories.dart';
 import 'package:yapa/bloc/items/items.dart';
 import 'package:yapa/bloc/shopping_list/shopping_items_tree.dart';
+import 'package:yapa/models/category.dart';
 import 'package:yapa/models/item.dart';
 import 'package:yapa/models/tagged_categorized_items.dart';
+import 'package:yapa/repository/category_repository.dart';
 
 class MockItemsBloc extends MockBloc<ItemsEvent, ItemsState>
     implements ItemsBloc {}
@@ -34,36 +36,36 @@ void main() {
         ShoppingItemsTreeLoading(),
         ShoppingItemsTreeLoaded({
           null: [
-            CategorizedItems('', [Item('Crackers', id: '0')]),
-            CategorizedItems('Bread and Cookies', []),
-            CategorizedItems('Vegetables and Herbs', []),
-            CategorizedItems('Fruits and Berries', []),
             CategorizedItems(
-                'Nuts, Seeds, Chocolate, Dried Fruits, Snacks', []),
-            CategorizedItems('Grains, Legumes, Pasta, other Dry Goods', []),
-            CategorizedItems('Condiments, Oils, Spices, Herbs, Baking', []),
-            CategorizedItems('Meat, Fish, Poultry', []),
-            CategorizedItems('Dairy', []),
-            CategorizedItems('Frozen Food', []),
-            CategorizedItems('Beverages', []),
-            CategorizedItems('Canned Food', []),
-            CategorizedItems('Household, Health, other Misc.', [])
+                defaultCategories.elementAt(0), [Item('Crackers', id: '0')]),
+            CategorizedItems(defaultCategories.elementAt(1), []),
+            CategorizedItems(defaultCategories.elementAt(2), []),
+            CategorizedItems(defaultCategories.elementAt(3), []),
+            CategorizedItems(defaultCategories.elementAt(4), []),
+            CategorizedItems(defaultCategories.elementAt(5), []),
+            CategorizedItems(defaultCategories.elementAt(6), []),
+            CategorizedItems(defaultCategories.elementAt(7), []),
+            CategorizedItems(defaultCategories.elementAt(8), []),
+            CategorizedItems(defaultCategories.elementAt(9), []),
+            CategorizedItems(defaultCategories.elementAt(10), []),
+            CategorizedItems(defaultCategories.elementAt(11), []),
+            CategorizedItems(defaultCategories.elementAt(12), [])
           ],
           '': [
-            CategorizedItems('', [Item('Crackers', id: '0')]),
-            CategorizedItems('Bread and Cookies', []),
-            CategorizedItems('Vegetables and Herbs', []),
-            CategorizedItems('Fruits and Berries', []),
             CategorizedItems(
-                'Nuts, Seeds, Chocolate, Dried Fruits, Snacks', []),
-            CategorizedItems('Grains, Legumes, Pasta, other Dry Goods', []),
-            CategorizedItems('Condiments, Oils, Spices, Herbs, Baking', []),
-            CategorizedItems('Meat, Fish, Poultry', []),
-            CategorizedItems('Dairy', []),
-            CategorizedItems('Frozen Food', []),
-            CategorizedItems('Beverages', []),
-            CategorizedItems('Canned Food', []),
-            CategorizedItems('Household, Health, other Misc.', [])
+                defaultCategories.elementAt(0), [Item('Crackers', id: '0')]),
+            CategorizedItems(defaultCategories.elementAt(1), []),
+            CategorizedItems(defaultCategories.elementAt(2), []),
+            CategorizedItems(defaultCategories.elementAt(3), []),
+            CategorizedItems(defaultCategories.elementAt(4), []),
+            CategorizedItems(defaultCategories.elementAt(5), []),
+            CategorizedItems(defaultCategories.elementAt(6), []),
+            CategorizedItems(defaultCategories.elementAt(7), []),
+            CategorizedItems(defaultCategories.elementAt(8), []),
+            CategorizedItems(defaultCategories.elementAt(9), []),
+            CategorizedItems(defaultCategories.elementAt(10), []),
+            CategorizedItems(defaultCategories.elementAt(11), []),
+            CategorizedItems(defaultCategories.elementAt(12), [])
           ]
         }),
       ],
@@ -85,13 +87,14 @@ void main() {
       },
       act: (ShoppingItemsTreeBloc bloc) async {
         bloc
-          ..add(ItemsUpdated(
-              [Item('Crackers', id: '0', category: "Bread and Cookies")]))
+          ..add(ItemsUpdated([
+            Item('Crackers', id: '0', category: defaultCategories.elementAt(1))
+          ]))
           ..add(CategorizedItemsUpdated(
             "",
             [
-              CategorizedItems("Appetizers", []),
-              CategorizedItems("Puddings", [])
+              CategorizedItems(Category("Appetizers", id: "13"), []),
+              CategorizedItems(Category("Puddings", id: "14"), [])
             ],
           ));
       },
@@ -99,61 +102,64 @@ void main() {
         ShoppingItemsTreeLoading(),
         ShoppingItemsTreeLoaded({
           null: [
-            CategorizedItems('', []),
-            CategorizedItems('Bread and Cookies',
-                [Item('Crackers', id: '0', category: "Bread and Cookies")]),
-            CategorizedItems('Vegetables and Herbs', []),
-            CategorizedItems('Fruits and Berries', []),
-            CategorizedItems(
-                'Nuts, Seeds, Chocolate, Dried Fruits, Snacks', []),
-            CategorizedItems('Grains, Legumes, Pasta, other Dry Goods', []),
-            CategorizedItems('Condiments, Oils, Spices, Herbs, Baking', []),
-            CategorizedItems('Meat, Fish, Poultry', []),
-            CategorizedItems('Dairy', []),
-            CategorizedItems('Frozen Food', []),
-            CategorizedItems('Beverages', []),
-            CategorizedItems('Canned Food', []),
-            CategorizedItems('Household, Health, other Misc.', [])
+            CategorizedItems(defaultCategories.elementAt(0), []),
+            CategorizedItems(defaultCategories.elementAt(1), [
+              Item('Crackers',
+                  id: '0', category: defaultCategories.elementAt(1))
+            ]),
+            CategorizedItems(defaultCategories.elementAt(2), []),
+            CategorizedItems(defaultCategories.elementAt(3), []),
+            CategorizedItems(defaultCategories.elementAt(4), []),
+            CategorizedItems(defaultCategories.elementAt(5), []),
+            CategorizedItems(defaultCategories.elementAt(6), []),
+            CategorizedItems(defaultCategories.elementAt(7), []),
+            CategorizedItems(defaultCategories.elementAt(8), []),
+            CategorizedItems(defaultCategories.elementAt(9), []),
+            CategorizedItems(defaultCategories.elementAt(10), []),
+            CategorizedItems(defaultCategories.elementAt(11), []),
+            CategorizedItems(defaultCategories.elementAt(12), [])
           ],
           '': [
-            CategorizedItems('', []),
-            CategorizedItems('Bread and Cookies',
-                [Item('Crackers', id: '0', category: "Bread and Cookies")]),
-            CategorizedItems('Vegetables and Herbs', []),
-            CategorizedItems('Fruits and Berries', []),
-            CategorizedItems(
-                'Nuts, Seeds, Chocolate, Dried Fruits, Snacks', []),
-            CategorizedItems('Grains, Legumes, Pasta, other Dry Goods', []),
-            CategorizedItems('Condiments, Oils, Spices, Herbs, Baking', []),
-            CategorizedItems('Meat, Fish, Poultry', []),
-            CategorizedItems('Dairy', []),
-            CategorizedItems('Frozen Food', []),
-            CategorizedItems('Beverages', []),
-            CategorizedItems('Canned Food', []),
-            CategorizedItems('Household, Health, other Misc.', [])
+            CategorizedItems(defaultCategories.elementAt(0), []),
+            CategorizedItems(defaultCategories.elementAt(1), [
+              Item('Crackers',
+                  id: '0', category: defaultCategories.elementAt(1))
+            ]),
+            CategorizedItems(defaultCategories.elementAt(2), []),
+            CategorizedItems(defaultCategories.elementAt(3), []),
+            CategorizedItems(defaultCategories.elementAt(4), []),
+            CategorizedItems(defaultCategories.elementAt(5), []),
+            CategorizedItems(defaultCategories.elementAt(6), []),
+            CategorizedItems(defaultCategories.elementAt(7), []),
+            CategorizedItems(defaultCategories.elementAt(8), []),
+            CategorizedItems(defaultCategories.elementAt(9), []),
+            CategorizedItems(defaultCategories.elementAt(10), []),
+            CategorizedItems(defaultCategories.elementAt(11), []),
+            CategorizedItems(defaultCategories.elementAt(12), [])
           ]
         }),
         ShoppingItemsTreeLoaded({
           null: [
-            CategorizedItems('', []),
-            CategorizedItems('Bread and Cookies',
-                [Item('Crackers', id: '0', category: "Bread and Cookies")]),
-            CategorizedItems('Vegetables and Herbs', []),
-            CategorizedItems('Fruits and Berries', []),
-            CategorizedItems(
-                'Nuts, Seeds, Chocolate, Dried Fruits, Snacks', []),
-            CategorizedItems('Grains, Legumes, Pasta, other Dry Goods', []),
-            CategorizedItems('Condiments, Oils, Spices, Herbs, Baking', []),
-            CategorizedItems('Meat, Fish, Poultry', []),
-            CategorizedItems('Dairy', []),
-            CategorizedItems('Frozen Food', []),
-            CategorizedItems('Beverages', []),
-            CategorizedItems('Canned Food', []),
-            CategorizedItems('Household, Health, other Misc.', [])
+            CategorizedItems(defaultCategories.elementAt(0), []),
+            CategorizedItems(defaultCategories.elementAt(1), [
+              Item('Crackers',
+                  id: '0', category: defaultCategories.elementAt(1))
+            ]),
+            CategorizedItems(defaultCategories.elementAt(2), []),
+            CategorizedItems(defaultCategories.elementAt(3), []),
+            CategorizedItems(defaultCategories.elementAt(4), []),
+            CategorizedItems(defaultCategories.elementAt(5), []),
+            CategorizedItems(defaultCategories.elementAt(6), []),
+            CategorizedItems(defaultCategories.elementAt(7), []),
+            CategorizedItems(defaultCategories.elementAt(8), []),
+            CategorizedItems(defaultCategories.elementAt(9), []),
+            CategorizedItems(defaultCategories.elementAt(10), []),
+            CategorizedItems(defaultCategories.elementAt(11), []),
+            CategorizedItems(defaultCategories.elementAt(12), [])
           ],
           '': [
-            CategorizedItems("Appetizers", []),
-            CategorizedItems("Puddings", [])
+            CategorizedItems(Category("Appetizers", id: "13"), []),
+            CategorizedItems(Category("Puddings", id: "14"), [])
           ]
         }),
       ],
